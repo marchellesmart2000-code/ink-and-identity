@@ -25,6 +25,8 @@ export const SEGMENTS = [
   },
 ] as const;
 
+export const SAMPLE_HERO_VIDEO = "/media/hero-gift-wrap.mp4";
+
 export const PLACEHOLDER_TONES = [
   "from-[#050505] to-[#3a2e18]",
   "from-[#0a0a0a] to-[#4a3b1c]",

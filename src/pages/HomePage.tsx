@@ -8,12 +8,12 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { GoldRule } from "@/components/ui/GoldRule";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import { SEGMENTS } from "@/lib/constants";
+import { SAMPLE_HERO_VIDEO, SEGMENTS } from "@/lib/constants";
 import { siteOrigin, whatsappHref } from "@/lib/whatsapp";
 import { api } from "../../convex/_generated/api";
 import { useQuery } from "convex/react";
 import { motion } from "framer-motion";
-import { useReducedMotion } from "framer-motion";
+import { useEffect, useRef } from "react";
 
 export function HomePage() {
   const settings = useSiteSettings();
@@ -22,7 +22,6 @@ export function HomePage() {
   const projects = useQuery(api.portfolio.listPublic, {});
   const social = useQuery(api.social.listPublic);
   const testimonials = useQuery(api.testimonials.listPublic);
-  const reduce = useReducedMotion();
   const wa = whatsappHref(
     settings?.whatsapp ?? "",
     "Hello Ink & Identity, I would like to start a project.",
@@ -62,33 +61,14 @@ export function HomePage() {
         ]}
       />
 
-      <section className="relative min-h-[92vh] ink-panel paper-grain text-ivory">
-        {settings?.heroVideoUrl && !reduce ? (
-          <video
-            className="absolute inset-0 h-full w-full object-cover opacity-40"
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster={settings.heroPosterUrl ?? undefined}
-          >
-            <source src={settings.heroVideoUrl} />
-          </video>
-        ) : (
-          <div
-            className="absolute inset-0 opacity-50"
-            style={{
-              backgroundImage: settings?.heroPosterUrl
-                ? `url(${settings.heroPosterUrl})`
-                : undefined,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          />
-        )}
-        <div className="absolute inset-0 bg-linear-to-t from-ink via-ink/70 to-ink/30" />
-        <div className="pointer-events-none absolute inset-6 border border-gold/20 md:inset-10" />
-        <div className="container-wide relative flex min-h-[92vh] flex-col justify-end pb-20 pt-36">
+      <section className="relative min-h-[92vh] overflow-hidden bg-ink text-ivory">
+        <HeroBackground
+          src={settings?.heroVideoUrl?.trim() || SAMPLE_HERO_VIDEO}
+          poster={settings?.heroPosterUrl}
+        />
+        <div className="pointer-events-none absolute inset-0 z-10 bg-linear-to-t from-ink via-ink/35 to-black/10" />
+        <div className="pointer-events-none absolute inset-6 z-10 border border-gold/20 md:inset-10" />
+        <div className="container-wide relative z-20 flex min-h-[92vh] flex-col justify-end pb-20 pt-36">
           <motion.p
             className="eyebrow"
             initial={{ opacity: 0, y: 12 }}
@@ -328,5 +308,46 @@ export function HomePage() {
         </div>
       </section>
     </>
+  );
+}
+
+function HeroBackground({
+  src,
+  poster,
+}: {
+  src: string;
+  poster?: string | null;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) {
+      return;
+    }
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    const play = () => {
+      void video.play().catch(() => undefined);
+    };
+    play();
+    video.addEventListener("canplay", play);
+    return () => video.removeEventListener("canplay", play);
+  }, [src]);
+
+  return (
+    <video
+      ref={videoRef}
+      className="absolute inset-0 z-0 h-full w-full object-cover"
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+      poster={poster ?? undefined}
+    >
+      <source src={src} type="video/mp4" />
+    </video>
   );
 }
