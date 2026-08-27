@@ -3,7 +3,7 @@ import { IconButton } from "@/components/ui/IconButton";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { cn } from "@/lib/cn";
 import { whatsappHref } from "@/lib/whatsapp";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { MobileNav } from "./MobileNav";
@@ -35,13 +35,18 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
+
   return (
     <header
       className={cn(
         "sticky top-0 z-30 border-b text-ivory transition-colors pt-[env(safe-area-inset-top)]",
         overHero
-          ? "border-gold/15 bg-ink/20 backdrop-blur-sm"
-          : "border-gold/25 bg-ink/95 shadow-[0_1px_0_rgb(198_163_90/0.18)] backdrop-blur",
+          ? "border-gold/15 bg-ink/20"
+          : "border-gold/25 bg-ink/95 shadow-[0_1px_0_rgb(198_163_90/0.18)]",
+        open ? "backdrop-blur-none" : overHero ? "backdrop-blur-sm" : "backdrop-blur",
       )}
     >
       <div className="container-wide flex items-center justify-between gap-3 py-3 md:py-4">
@@ -78,11 +83,13 @@ export function Header() {
           ) : null}
         </div>
         <IconButton
-          label="Open menu"
-          className="text-gold lg:hidden"
-          onClick={() => setOpen(true)}
+          label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          aria-controls="mobile-navigation"
+          className="relative text-gold lg:hidden"
+          onClick={() => setOpen((value) => !value)}
         >
-          <Menu size={18} />
+          {open ? <X size={18} /> : <Menu size={18} />}
         </IconButton>
       </div>
       <MobileNav open={open} onClose={() => setOpen(false)} links={links} whatsapp={wa} />

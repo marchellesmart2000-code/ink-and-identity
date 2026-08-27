@@ -23,7 +23,6 @@
   html {
     scroll-behavior: smooth;
     background: var(--color-ink);
-    overflow-x: clip;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -39,9 +38,14 @@
     color: var(--color-ivory);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
-    overflow-x: clip;
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
+  }
+
+  html.mobile-menu-open,
+  html.mobile-menu-open body {
+    overflow: hidden;
+    overscroll-behavior: none;
   }
 
   :focus-visible {
