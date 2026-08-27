@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000">
+  <rect width="800" height="1000" fill="#1C1917"/>
+  <rect x="180" y="240" width="440" height="520" rx="12" fill="#2A2420"/>
+  <circle cx="400" cy="420" r="90" fill="#C4A574" opacity="0.35"/>
+  <text x="400" y="860" text-anchor="middle" fill="#C4A574" font-family="Georgia, serif" font-size="22">TODO: owner photography</text>
+</svg>

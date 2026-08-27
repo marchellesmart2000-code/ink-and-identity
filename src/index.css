@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #050505;
+  --color-charcoal: #0e0e0e;
+  --color-graphite: #1a1a1a;
+  --color-ivory: #f4ead6;
+  --color-warm: #0a0a0a;
+  --color-paper: #141414;
+  --color-blush: #d4b5a8;
+  --color-taupe: #b3985a;
+  --color-gold: #c6a35a;
+  --color-gold-bright: #e4c98a;
+  --color-success: #6a8f72;
+  --color-warning: #c4a574;
+  --color-error: #c46b6b;
+  --font-display: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --shadow-soft: 0 30px 80px -36px rgb(198 163 90 / 0.28);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    background: var(--color-ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    background: var(--color-ink);
+    color: var(--color-ivory);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-gold) 55%, black);
+    color: var(--color-ivory);
+  }
+}
+
+@layer components {
+  .paper-grain {
+    background-image:
+      radial-gradient(900px 420px at 80% -20%, rgb(198 163 90 / 0.12), transparent 55%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+  }
+
+  .ink-panel {
+    background:
+      radial-gradient(1000px 520px at 70% 10%, rgb(198 163 90 / 0.18), transparent 52%),
+      radial-gradient(700px 380px at 10% 90%, rgb(198 163 90 / 0.08), transparent 48%),
+      linear-gradient(180deg, #111111, #050505);
+  }
+
+  .gold-hairline {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+  }
+
+  .gold-frame {
+    box-shadow: inset 0 0 0 1px rgb(198 163 90 / 0.28);
+  }
+
+  .surface-dark {
+    background: linear-gradient(180deg, #101010, #0a0a0a);
+    box-shadow: inset 0 0 0 1px rgb(198 163 90 / 0.16);
+  }
+
+  .display {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+  }
+
+  .eyebrow {
+    font-size: 0.68rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+    font-weight: 500;
+  }
+
+  .container-page {
+    width: min(1180px, calc(100% - 2rem));
+    margin-inline: auto;
+  }
+
+  .container-wide {
+    width: min(1360px, calc(100% - 2rem));
+    margin-inline: auto;
+  }
+}
