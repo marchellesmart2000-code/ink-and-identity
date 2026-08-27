@@ -10,11 +10,11 @@ export function Footer() {
     "Hello Ink & Identity, I would like to talk about a project.",
   );
   return (
-    <footer className="mt-24 border-t border-gold/20 bg-ink text-ivory paper-grain">
-      <div className="container-wide py-16">
-        <div className="grid gap-12 md:grid-cols-12">
+    <footer className="mt-12 border-t border-gold/20 bg-ink text-ivory paper-grain md:mt-24">
+      <div className="container-wide py-10 md:py-16">
+        <div className="grid gap-10 md:grid-cols-12 md:gap-12">
           <div className="md:col-span-5">
-            <p className="display text-5xl text-gold">{settings?.brandName ?? "Ink & Identity"}</p>
+            <p className="display text-4xl text-gold md:text-5xl">{settings?.brandName ?? "Ink & Identity"}</p>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-ivory/70">
               {settings?.tagline ?? "Turning ideas into beautifully made, meaningful products."}
             </p>

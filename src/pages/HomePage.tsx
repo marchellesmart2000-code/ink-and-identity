@@ -61,14 +61,14 @@ export function HomePage() {
         ]}
       />
 
-      <section className="relative min-h-[92vh] overflow-hidden bg-ink text-ivory">
+      <section className="relative min-h-[100svh] overflow-hidden bg-ink text-ivory">
         <HeroBackground
           src={settings?.heroVideoUrl?.trim() || SAMPLE_HERO_VIDEO}
           poster={settings?.heroPosterUrl}
         />
         <div className="pointer-events-none absolute inset-0 z-10 bg-linear-to-t from-ink via-ink/35 to-black/10" />
-        <div className="pointer-events-none absolute inset-6 z-10 border border-gold/20 md:inset-10" />
-        <div className="container-wide relative z-20 flex min-h-[92vh] flex-col justify-end pb-20 pt-36">
+        <div className="pointer-events-none absolute inset-3 z-10 border border-gold/20 sm:inset-6 md:inset-10" />
+        <div className="container-wide relative z-20 flex min-h-[100svh] flex-col justify-end pb-10 pt-28 sm:pb-16 sm:pt-36 md:pb-20">
           <motion.p
             className="eyebrow"
             initial={{ opacity: 0, y: 12 }}
@@ -77,25 +77,25 @@ export function HomePage() {
             {settings?.heroEyebrow ?? "INK & IDENTITY · CUSTOM PRINTS"}
           </motion.p>
           <motion.h1
-            className="display mt-6 max-w-4xl text-6xl text-ivory md:text-8xl"
+            className="display mt-4 max-w-4xl text-[2.35rem] text-ivory sm:mt-6 sm:text-6xl md:text-8xl"
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
             {settings?.heroHeadline ?? "Your idea, beautifully made."}
           </motion.h1>
-          <div className="gold-hairline mt-8 max-w-48" />
+          <div className="gold-hairline mt-6 max-w-48 sm:mt-8" />
           <motion.p
-            className="mt-6 max-w-xl text-base leading-relaxed text-ivory/75 md:text-lg"
+            className="mt-4 max-w-xl text-sm leading-relaxed text-ivory/75 sm:mt-6 sm:text-base md:text-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
             {settings?.heroSupport}
           </motion.p>
-          <div className="mt-10 flex flex-wrap gap-3">
-            <Button href="/quote">Start a project</Button>
-            <Button href="/portfolio" variant="ghost">
+          <div className="mt-8 flex w-full flex-col gap-3 sm:mt-10 sm:w-auto sm:flex-row sm:flex-wrap">
+            <Button href="/quote" className="w-full sm:w-auto">Start a project</Button>
+            <Button href="/portfolio" variant="ghost" className="w-full sm:w-auto">
               Explore the work
             </Button>
           </div>
@@ -103,7 +103,7 @@ export function HomePage() {
       </section>
 
       <section className="border-y border-gold/20 bg-charcoal">
-        <div className="container-wide grid gap-6 py-8 md:grid-cols-4">
+        <div className="container-wide grid gap-4 py-6 sm:gap-6 sm:py-8 md:grid-cols-4">
           {(settings?.trustStatements ?? []).map((item) => (
             <p key={item} className="text-center text-[0.78rem] tracking-[0.16em] uppercase text-gold">
               {item}
@@ -112,9 +112,9 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="container-wide py-24">
+      <section className="container-wide py-14 md:py-24">
         <p className="eyebrow">Services</p>
-        <h2 className="display mt-3 text-5xl md:text-6xl">Made for how you show up.</h2>
+        <h2 className="display mt-3 text-4xl md:text-6xl">Made for how you show up.</h2>
         <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {services === undefined ? (
             <Skeleton className="h-80" />
@@ -137,13 +137,13 @@ export function HomePage() {
       </section>
 
       <section className="border-y border-gold/15 bg-charcoal">
-        <div className="container-wide grid items-center gap-12 py-24 md:grid-cols-12">
+        <div className="container-wide grid items-center gap-8 py-14 md:grid-cols-12 md:gap-12 md:py-24">
           <div className="md:col-span-6">
             <div className="aspect-[4/5] rounded-sm border border-gold/20 ink-panel paper-grain" />
           </div>
           <div className="md:col-span-6">
             <p className="eyebrow">Process</p>
-            <h2 className="display mt-3 text-5xl text-ivory md:text-6xl">
+            <h2 className="display mt-3 text-4xl text-ivory md:text-6xl">
               {settings?.editorialHeadline ?? "Made to be remembered"}
             </h2>
             <p className="mt-6 max-w-lg text-base leading-relaxed text-ivory/70">
@@ -157,11 +157,11 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="container-wide py-24">
-        <div className="flex items-end justify-between gap-6">
+      <section className="container-wide py-14 md:py-24">
+        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
           <div>
             <p className="eyebrow">Selected work</p>
-            <h2 className="display mt-3 text-5xl">Featured projects</h2>
+            <h2 className="display mt-3 text-4xl md:text-5xl">Featured projects</h2>
           </div>
           <Button href="/portfolio" variant="line">
             All work
@@ -182,10 +182,10 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="border-y border-gold/15 bg-charcoal py-24">
+      <section className="border-y border-gold/15 bg-charcoal py-14 md:py-24">
         <div className="container-wide">
           <p className="eyebrow">Catalogue</p>
-          <h2 className="display mt-3 text-5xl">Pieces to begin with</h2>
+          <h2 className="display mt-3 text-4xl md:text-5xl">Pieces to begin with</h2>
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {(products ?? []).slice(0, 8).map((product, index) => (
               <ProductCard
@@ -204,7 +204,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="container-wide py-24">
+      <section className="container-wide py-14 md:py-24">
         <p className="eyebrow">How it works</p>
         <div className="mt-10 grid gap-10 md:grid-cols-3">
           {(settings?.processSteps ?? []).map((step, index) => (
@@ -217,9 +217,9 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="ink-panel paper-grain py-24 text-ivory">
+      <section className="ink-panel paper-grain py-14 text-ivory md:py-24">
         <div className="container-wide">
-          <h2 className="display text-5xl">Who it is for</h2>
+          <h2 className="display text-4xl md:text-5xl">Who it is for</h2>
           <div className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {SEGMENTS.map((segment) => (
               <SegmentCard key={segment.slug} title={segment.title} body={segment.body} href={segment.href} />
@@ -228,11 +228,11 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="container-wide py-24">
-        <div className="flex items-end justify-between">
+      <section className="container-wide py-14 md:py-24">
+        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="eyebrow">Studio diary</p>
-            <h2 className="display mt-3 text-5xl">Instagram & Facebook</h2>
+            <h2 className="display mt-3 text-4xl md:text-5xl">Instagram & Facebook</h2>
           </div>
           {settings?.instagramUrl ? (
             <Button href={settings.instagramUrl} variant="line">
@@ -263,7 +263,7 @@ export function HomePage() {
       </section>
 
       {testimonials && testimonials.length > 0 ? (
-        <section className="border-y border-gold/15 bg-charcoal py-24">
+        <section className="border-y border-gold/15 bg-charcoal py-14 md:py-24">
           <div className="container-wide grid gap-8 md:grid-cols-3">
             {testimonials.map((item) => (
               <blockquote key={item._id} className="rounded-sm border border-gold/25 p-6">
@@ -278,9 +278,9 @@ export function HomePage() {
         </section>
       ) : null}
 
-      <section className="container-wide py-16">
+      <section className="container-wide py-12 md:py-16">
         <p className="eyebrow">Mpumalanga</p>
-        <h2 className="display mt-3 text-5xl">Close to the work</h2>
+        <h2 className="display mt-3 text-4xl md:text-5xl">Close to the work</h2>
         <p className="mt-6 max-w-2xl text-base leading-relaxed text-ivory/70">
           Service areas are published only once the owner confirms them. The current wording is editable in studio settings.
         </p>
@@ -291,16 +291,16 @@ export function HomePage() {
         </ul>
       </section>
 
-      <section className="ink-panel paper-grain py-24 text-center text-ivory">
+      <section className="ink-panel paper-grain py-14 text-center text-ivory md:py-24">
         <div className="container-page">
-          <h2 className="display text-5xl text-gold md:text-7xl">
+          <h2 className="display text-4xl text-gold md:text-7xl">
             {settings?.finalCtaHeadline ?? "Let’s put your identity into something people can hold."}
           </h2>
-          <p className="mx-auto mt-6 max-w-xl text-ivory/70">{settings?.finalCtaBody}</p>
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
-            <Button href="/quote">Request a quote</Button>
+          <p className="mx-auto mt-6 max-w-xl text-sm text-ivory/70 md:text-base">{settings?.finalCtaBody}</p>
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:mt-10 sm:flex-row sm:flex-wrap">
+            <Button href="/quote" className="w-full sm:w-auto">Request a quote</Button>
             {wa ? (
-              <Button href={wa} variant="ghost">
+              <Button href={wa} variant="ghost" className="w-full sm:w-auto">
                 WhatsApp
               </Button>
             ) : null}

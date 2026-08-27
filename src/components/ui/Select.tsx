@@ -12,7 +12,7 @@ export function Select({
       <span className="text-[0.68rem] tracking-[0.16em] uppercase text-gold/80">{label}</span>
       <select
         className={cn(
-          "w-full rounded-sm border border-gold/25 bg-charcoal px-4 py-3 text-sm text-ivory outline-none focus:border-gold",
+          "w-full rounded-sm border border-gold/25 bg-charcoal px-4 py-3 text-base text-ivory outline-none focus:border-gold md:text-sm",
           className,
         )}
         {...props}

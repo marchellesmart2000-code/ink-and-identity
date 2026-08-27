@@ -7,7 +7,7 @@ export function AnnouncementBar() {
     return null;
   }
   const inner = (
-    <p className="py-2 text-center text-[0.68rem] tracking-[0.22em] uppercase text-gold">
+    <p className="px-3 py-2 text-center text-[0.62rem] leading-5 tracking-[0.12em] uppercase text-gold sm:tracking-[0.22em]">
       {settings.announcementText}
     </p>
   );

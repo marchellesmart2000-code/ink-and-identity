@@ -38,14 +38,14 @@ export function Header() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 border-b text-ivory transition-colors",
+        "sticky top-0 z-30 border-b text-ivory transition-colors pt-[env(safe-area-inset-top)]",
         overHero
           ? "border-gold/15 bg-ink/20 backdrop-blur-sm"
           : "border-gold/25 bg-ink/95 shadow-[0_1px_0_rgb(198_163_90/0.18)] backdrop-blur",
       )}
     >
-      <div className="container-wide flex items-center justify-between gap-4 py-4">
-        <Link to="/" className="display text-2xl tracking-tight text-gold md:text-3xl">
+      <div className="container-wide flex items-center justify-between gap-3 py-3 md:py-4">
+        <Link to="/" className="display min-w-0 truncate text-xl tracking-tight text-gold sm:text-2xl md:text-3xl">
           {settings?.brandName ?? "Ink & Identity"}
         </Link>
         <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary">

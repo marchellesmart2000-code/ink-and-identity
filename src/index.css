@@ -23,6 +23,7 @@
   html {
     scroll-behavior: smooth;
     background: var(--color-ink);
+    overflow-x: clip;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -38,6 +39,9 @@
     color: var(--color-ivory);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 
   :focus-visible {
@@ -83,24 +87,44 @@
     font-family: var(--font-display);
     font-weight: 500;
     letter-spacing: -0.03em;
-    line-height: 0.95;
+    line-height: 1.02;
+    overflow-wrap: anywhere;
   }
 
   .eyebrow {
-    font-size: 0.68rem;
-    letter-spacing: 0.28em;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--color-gold);
     font-weight: 500;
   }
 
   .container-page {
-    width: min(1180px, calc(100% - 2rem));
+    width: min(1180px, calc(100% - 1.5rem));
     margin-inline: auto;
   }
 
   .container-wide {
-    width: min(1360px, calc(100% - 2rem));
+    width: min(1360px, calc(100% - 1.5rem));
     margin-inline: auto;
+  }
+
+  @media (min-width: 768px) {
+    .display {
+      line-height: 0.95;
+    }
+
+    .eyebrow {
+      font-size: 0.68rem;
+      letter-spacing: 0.28em;
+    }
+
+    .container-page {
+      width: min(1180px, calc(100% - 2rem));
+    }
+
+    .container-wide {
+      width: min(1360px, calc(100% - 2rem));
+    }
   }
 }

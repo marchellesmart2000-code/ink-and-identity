@@ -21,7 +21,7 @@ export function MobileNav({
             key={link.to}
             to={link.to}
             onClick={onClose}
-            className="display text-4xl text-ivory"
+            className="display text-3xl text-ivory sm:text-4xl"
           >
             {link.label}
           </Link>

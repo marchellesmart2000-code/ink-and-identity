@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 export function SiteLayout() {
   const location = useLocation();
   return (
-    <div className="min-h-screen bg-ink text-ivory">
+    <div className="min-h-dvh overflow-x-clip bg-ink text-ivory">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-gold focus:px-4 focus:py-2"

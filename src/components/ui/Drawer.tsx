@@ -26,7 +26,7 @@ export function Drawer({
             onClick={onClose}
           />
           <motion.aside
-            className="fixed inset-y-0 right-0 z-50 w-[min(100%,28rem)] border-l border-gold/25 bg-charcoal text-ivory paper-grain"
+            className="fixed inset-y-0 right-0 z-50 w-[min(100%,28rem)] overflow-y-auto border-l border-gold/25 bg-charcoal text-ivory paper-grain pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}

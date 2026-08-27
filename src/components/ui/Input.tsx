@@ -15,7 +15,7 @@ export function Input({
       <input
         id={inputId}
         className={cn(
-          "w-full rounded-sm border border-gold/25 bg-charcoal px-4 py-3 text-sm text-ivory outline-none transition-colors placeholder:text-ivory/35 focus:border-gold",
+          "w-full rounded-sm border border-gold/25 bg-charcoal px-4 py-3 text-base text-ivory outline-none transition-colors placeholder:text-ivory/35 focus:border-gold md:text-sm",
           className,
         )}
         {...props}

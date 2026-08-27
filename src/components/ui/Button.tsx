@@ -28,7 +28,7 @@ export function Button({
   ...props
 }: Props) {
   const classes = cn(
-    "inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[0.72rem] font-medium tracking-[0.18em] uppercase transition-colors disabled:opacity-50",
+    "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 py-3 text-[0.68rem] font-medium tracking-[0.14em] uppercase transition-colors disabled:opacity-50 sm:px-6 sm:text-[0.72rem] sm:tracking-[0.18em]",
     styles[variant],
     className,
   );

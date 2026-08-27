@@ -14,7 +14,7 @@ export function StudioMap({
 
   return (
     <figure className="overflow-hidden rounded-sm border border-gold/25 bg-charcoal">
-      <div className="relative aspect-[4/3] min-h-72 w-full md:min-h-[28rem]">
+      <div className="relative aspect-[4/5] min-h-56 w-full sm:aspect-[4/3] md:min-h-[28rem]">
         <iframe
           title="Ink & Identity studio location"
           src={src}
