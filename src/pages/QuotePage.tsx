@@ -9,8 +9,9 @@ import { Textarea } from "@/components/ui/Textarea";
 import { useToast } from "@/components/ui/Toast";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { resolveStudio } from "@/lib/studio";
+import { QUOTE_CATEGORIES, quoteCategoryName } from "@/lib/constants";
+import { publishedProduct } from "@/lib/catalogue";
 import { enquiryWhatsappMessage, whatsappHref } from "@/lib/whatsapp";
-import { publishedProducts } from "@/lib/catalogue";
 import { api } from "../../convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -29,7 +30,6 @@ const STEPS = [
 
 export function QuotePage() {
   const settings = useSiteSettings();
-  const products = useQuery(api.products.listPublic, {});
   const services = useQuery(api.services.listPublic);
   const generateUploadUrl = useMutation(api.files.generateQuoteUploadUrl);
   const submit = useMutation(api.quotes.submit);
@@ -37,6 +37,23 @@ export function QuotePage() {
   const [params] = useSearchParams();
   const preProduct = params.get("product") ?? "";
   const preService = params.get("service") ?? "";
+  const preCategory = useMemo(() => {
+    if (!preProduct) {
+      return "";
+    }
+    const product = publishedProduct(preProduct);
+    if (!product) {
+      return "";
+    }
+    const normalized = product.categoryName.toLowerCase();
+    return (
+      QUOTE_CATEGORIES.find(
+        (category) =>
+          category.name.toLowerCase() === normalized ||
+          normalized.includes(category.name.toLowerCase()),
+      )?.slug ?? ""
+    );
+  }, [preProduct]);
 
   const [step, setStep] = useState(0);
   const [done, setDone] = useState(false);
@@ -47,7 +64,7 @@ export function QuotePage() {
     phone: "",
     customerType: "business",
     needType: preService || "custom request",
-    productSlug: preProduct,
+    productCategory: preCategory || QUOTE_CATEGORIES[0].slug,
     quantity: "1",
     details: "",
     brandNotes: "",
@@ -57,12 +74,7 @@ export function QuotePage() {
     honeypot: "",
   });
 
-  const selectedProduct = useMemo(
-    () =>
-      publishedProducts().find((item) => item.slug === form.productSlug) ??
-      products?.find((item) => item.slug === form.productSlug),
-    [products, form.productSlug],
-  );
+  const selectedCategoryName = quoteCategoryName(form.productCategory);
 
   const studio = resolveStudio(settings);
   const whatsappMessage = useMemo(
@@ -74,7 +86,7 @@ export function QuotePage() {
         phone: form.phone,
         customerType: form.customerType,
         needType: form.needType,
-        productName: selectedProduct?.name,
+        productName: selectedCategoryName,
         quantity: form.quantity,
         brandNotes: form.brandNotes,
         deadline: form.deadline,
@@ -82,7 +94,7 @@ export function QuotePage() {
         details: form.details,
         fileNames: files.map((file) => file.name),
       }),
-    [settings?.brandName, form, selectedProduct?.name, files],
+    [settings?.brandName, form, selectedCategoryName, files],
   );
   const whatsappLink = useMemo(
     () => whatsappHref(studio.whatsapp, whatsappMessage),
@@ -127,12 +139,9 @@ export function QuotePage() {
         honeypot: form.honeypot,
         lines: [
           {
-            label: selectedProduct?.name || form.needType,
+            label: selectedCategoryName || form.needType,
             quantity: Number(form.quantity) || 1,
             notes: form.details,
-            ...(selectedProduct && "_id" in selectedProduct && selectedProduct._id
-              ? { productId: selectedProduct._id }
-              : {}),
           },
         ],
         files: uploaded,
@@ -241,14 +250,13 @@ export function QuotePage() {
           {step === 3 ? (
             <>
               <Select
-                label="Product (optional)"
-                value={form.productSlug}
-                onChange={(e) => setForm({ ...form, productSlug: e.target.value })}
+                label="Product category"
+                value={form.productCategory}
+                onChange={(e) => setForm({ ...form, productCategory: e.target.value })}
               >
-                <option value="">A custom request</option>
-                {publishedProducts().map((product) => (
-                  <option key={product.slug} value={product.slug}>
-                    {product.categoryName} — {product.name}
+                {QUOTE_CATEGORIES.map((category) => (
+                  <option key={category.slug} value={category.slug}>
+                    {category.name}
                   </option>
                 ))}
               </Select>
