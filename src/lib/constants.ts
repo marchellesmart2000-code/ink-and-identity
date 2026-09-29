@@ -1,3 +1,22 @@
+export const QUOTE_CATEGORIES = [
+  { slug: "acrylic-keyrings", name: "Acrylic Keyrings" },
+  { slug: "coffee-mugs", name: "Coffee Mugs" },
+  { slug: "click-pens", name: "Click Pens" },
+  { slug: "glass-clock", name: "Glass Clock" },
+  { slug: "glass-fridge-magnets", name: "Glass Fridge Magnets" },
+  { slug: "15oz-stainless-steel-tumbler", name: "15oz Stainless Steel Tumbler" },
+  { slug: "20oz-stainless-steel-tumbler", name: "20oz Stainless Steel Tumbler" },
+  { slug: "mousepads", name: "Mousepads" },
+  { slug: "rubber-coasters", name: "Rubber Coasters" },
+  { slug: "stainless-steel-waterbottle", name: "Stainless Steel Waterbottle" },
+  { slug: "bar-mats", name: "Bar mats" },
+  { slug: "tshirts", name: "TShirts" },
+] as const;
+
+export function quoteCategoryName(slug: string): string | undefined {
+  return QUOTE_CATEGORIES.find((category) => category.slug === slug)?.name;
+}
+
 export const SEGMENTS = [
   {
     slug: "businesses-brands",
