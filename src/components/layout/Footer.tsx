@@ -65,12 +65,6 @@ export function Footer() {
         </nav>
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-ivory/60">
           <SocialLinks />
-          <Link to="/privacy" className="hover:text-gold">
-            Privacy
-          </Link>
-          <Link to="/terms" className="hover:text-gold">
-            Terms
-          </Link>
         </div>
         <div className="relative mt-2">
           <div className="flex justify-center">
