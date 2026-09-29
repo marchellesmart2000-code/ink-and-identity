@@ -11,6 +11,7 @@ export const QUOTE_CATEGORIES = [
   { slug: "stainless-steel-waterbottle", name: "Stainless Steel Waterbottle" },
   { slug: "bar-mats", name: "Bar mats" },
   { slug: "tshirts", name: "TShirts" },
+  { slug: "other-products", name: "Other Products" },
 ] as const;
 
 export function quoteCategoryName(slug: string): string | undefined {
