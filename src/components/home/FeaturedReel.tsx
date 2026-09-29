@@ -45,9 +45,104 @@ export function FeaturedReel({ products }: { products: ShopProduct[] }) {
       frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
+
+    let active: { id: number; x: number; y: number; axis: "x" | "y" | null; moved: boolean } | null = null;
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" && event.button !== 0) {
+        return;
+      }
+      active = { id: event.pointerId, x: event.clientX, y: event.clientY, axis: null, moved: false };
+      drag.current = { x: event.clientX, moved: false };
+      paused.current = true;
+    };
+    const onPointerMove = (event: PointerEvent) => {
+      if (!active || event.pointerId !== active.id) {
+        return;
+      }
+      const dx = event.clientX - active.x;
+      const dy = event.clientY - active.y;
+      if (!active.axis) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) {
+          return;
+        }
+        active.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+        if (active.axis === "y") {
+          active = null;
+          drag.current = null;
+          paused.current = false;
+          return;
+        }
+        try {
+          viewport.setPointerCapture(event.pointerId);
+        } catch {
+          // The pointer can already be gone on a quick tap.
+        }
+      }
+      if (active.axis !== "x") {
+        return;
+      }
+      if (event.cancelable) {
+        event.preventDefault();
+      }
+      active.moved = true;
+      moved.current = true;
+      offset.current += dx;
+      active.x = event.clientX;
+      if (drag.current) {
+        drag.current.moved = true;
+        drag.current.x = event.clientX;
+      }
+    };
+    const endDrag = (event: PointerEvent) => {
+      if (active && event.pointerId !== active.id) {
+        return;
+      }
+      moved.current = active?.moved ?? false;
+      active = null;
+      drag.current = null;
+      paused.current = false;
+    };
+    const onTouchMove = (event: TouchEvent) => {
+      if (!active) {
+        return;
+      }
+      const touch = event.touches[0];
+      if (!touch) {
+        return;
+      }
+      if (!active.axis) {
+        const dx = touch.clientX - active.x;
+        const dy = touch.clientY - active.y;
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) {
+          return;
+        }
+        active.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+        if (active.axis === "y") {
+          active = null;
+          drag.current = null;
+          paused.current = false;
+          return;
+        }
+      }
+      if (active.axis === "x" && event.cancelable) {
+        event.preventDefault();
+      }
+    };
+
+    viewport.addEventListener("pointerdown", onPointerDown);
+    viewport.addEventListener("pointermove", onPointerMove);
+    viewport.addEventListener("pointerup", endDrag);
+    viewport.addEventListener("pointercancel", endDrag);
+    viewport.addEventListener("touchmove", onTouchMove, { passive: false });
+
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
+      viewport.removeEventListener("pointerdown", onPointerDown);
+      viewport.removeEventListener("pointermove", onPointerMove);
+      viewport.removeEventListener("pointerup", endDrag);
+      viewport.removeEventListener("pointercancel", endDrag);
+      viewport.removeEventListener("touchmove", onTouchMove);
     };
   }, [products.length]);
 
@@ -59,47 +154,21 @@ export function FeaturedReel({ products }: { products: ShopProduct[] }) {
 
   return (
     <section className="border-y border-gold/15 bg-charcoal py-10 md:py-14" aria-label="Featured products">
-      <div className="container-wide mb-6 flex items-end justify-between gap-4 md:mb-8">
-        <div>
-          <p className="eyebrow">Featured</p>
-          <h2 className="display mt-2 text-3xl sm:text-4xl md:text-5xl">Pieces on the bench</h2>
+      <div className="container-wide mb-6 md:mb-8">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="eyebrow">Featured</p>
+            <h2 className="display mt-2 text-3xl sm:text-4xl md:text-5xl">Pieces on the bench</h2>
+          </div>
+          <p className="hidden max-w-xs text-right text-sm text-ivory/55 sm:block">
+            Drag either way. Tap a piece to open its category.
+          </p>
         </div>
-        <p className="hidden max-w-xs text-right text-sm text-ivory/55 sm:block">
-          Drag either way. Tap a piece to open its category.
-        </p>
+        <p className="mt-2 text-sm text-ivory/55 sm:hidden">Swipe either way. Tap a piece to open its category.</p>
       </div>
       <div
         ref={viewportRef}
-        className="cursor-grab overflow-hidden active:cursor-grabbing"
-        onPointerDown={(event) => {
-          if (event.pointerType === "mouse" && event.button !== 0) {
-            return;
-          }
-          drag.current = { x: event.clientX, moved: false };
-          paused.current = true;
-          event.currentTarget.setPointerCapture(event.pointerId);
-        }}
-        onPointerMove={(event) => {
-          if (!drag.current) {
-            return;
-          }
-          const dx = event.clientX - drag.current.x;
-          if (Math.abs(dx) > 5) {
-            drag.current.moved = true;
-            moved.current = true;
-          }
-          offset.current += dx;
-          drag.current.x = event.clientX;
-        }}
-        onPointerUp={() => {
-          moved.current = drag.current?.moved ?? false;
-          drag.current = null;
-          paused.current = false;
-        }}
-        onPointerCancel={() => {
-          drag.current = null;
-          paused.current = false;
-        }}
+        className="cursor-grab touch-pan-y overflow-hidden active:cursor-grabbing"
         onMouseEnter={() => {
           if (window.matchMedia("(hover: hover)").matches) {
             paused.current = true;

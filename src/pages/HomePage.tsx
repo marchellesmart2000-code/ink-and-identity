@@ -312,10 +312,9 @@ function HeroBackground({
   const [playVideo, setPlayVideo] = useState(false);
 
   useEffect(() => {
-    const narrow = window.matchMedia("(max-width: 767px)").matches;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
-    if (narrow || reduced || connection?.saveData) {
+    if (reduced || connection?.saveData) {
       return;
     }
     setPlayVideo(true);
@@ -351,7 +350,7 @@ function HeroBackground({
       muted
       loop
       playsInline
-      preload="metadata"
+      preload="auto"
       poster={poster ?? undefined}
     >
       <source src={src} type="video/mp4" />
