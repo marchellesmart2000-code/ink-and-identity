@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { requireStaff } from "./lib/permissions";
+import { requireAdmin, requireStaff } from "./lib/permissions";
 import { resolveGallery } from "./lib/media";
 import { buildSearchText, slugify } from "./lib/slug";
 import {
@@ -208,7 +208,12 @@ export const listAdmin = query({
     await requireStaff(ctx);
     const products = await ctx.db.query("products").collect();
     products.sort((a, b) => a.sortOrder - b.sortOrder);
-    return products;
+    return await Promise.all(
+      products.map(async (product) => {
+        const category = await ctx.db.get(product.categoryId);
+        return { ...product, categoryName: category?.name ?? "", categorySlug: category?.slug ?? "" };
+      }),
+    );
   },
 });
 
@@ -228,7 +233,7 @@ export const getAdmin = query({
 export const create = mutation({
   args: productWriteFields,
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     const slug = slugify(args.slug || args.name);
     const existing = await ctx.db
       .query("products")
@@ -261,7 +266,7 @@ export const create = mutation({
 export const update = mutation({
   args: { id: v.id("products"), ...productWriteFields },
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     const { id, ...rest } = args;
     const current = await ctx.db.get(id);
     if (!current) {
@@ -297,7 +302,7 @@ export const update = mutation({
 export const archive = mutation({
   args: { id: v.id("products"), archived: v.boolean() },
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     await ctx.db.patch(args.id, {
       archived: args.archived,
       availability: args.archived ? "archived" : "available_to_quote",

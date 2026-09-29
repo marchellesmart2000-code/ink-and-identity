@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { requireStaff } from "./lib/permissions";
+import { requireAdmin, requireStaff } from "./lib/permissions";
 import { resolveGallery, resolveImage } from "./lib/media";
 import { slugify } from "./lib/slug";
 import { customerTypeValidator, imageAssetValidator } from "./lib/validators";
@@ -99,7 +99,7 @@ export const getAdmin = query({
 export const create = mutation({
   args: projectFields,
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     const slug = slugify(args.slug || args.title);
     const existing = await ctx.db
       .query("portfolioProjects")
@@ -120,7 +120,7 @@ export const create = mutation({
 export const update = mutation({
   args: { id: v.id("portfolioProjects"), ...projectFields },
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     const { id, ...rest } = args;
     await ctx.db.patch(id, { ...rest, slug: slugify(rest.slug || rest.title) });
   },
@@ -129,7 +129,7 @@ export const update = mutation({
 export const archive = mutation({
   args: { id: v.id("portfolioProjects"), archived: v.boolean() },
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     await ctx.db.patch(args.id, {
       archived: args.archived,
       ...(args.archived ? { published: false } : {}),

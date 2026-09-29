@@ -1,85 +1,120 @@
+import { SocialLinks } from "@/components/layout/SocialLinks";
 import { StudioMap } from "@/components/contact/StudioMap";
 import { Seo } from "@/components/seo/Seo";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { googleMapsDirectionsUrl } from "@/lib/maps";
-import { whatsappHref } from "@/lib/whatsapp";
+import { resolveStudio } from "@/lib/studio";
+import { CONTACT_WHATSAPP_MESSAGE, whatsappHref } from "@/lib/whatsapp";
 
 export function ContactPage() {
-  const settings = useSiteSettings();
-  const wa = whatsappHref(
-    settings?.whatsapp ?? "",
-    "Hello Ink & Identity, I would like to get in touch.",
-  );
-  const directions = googleMapsDirectionsUrl(settings?.address, settings?.mapUrl);
+  const studio = resolveStudio(useSiteSettings());
+  const wa = whatsappHref(studio.whatsapp, CONTACT_WHATSAPP_MESSAGE);
+  const directions = googleMapsDirectionsUrl(studio.mapAddress, studio.mapUrl);
 
   return (
     <div className="container-wide py-16">
       <Seo
         title="Contact | Ink & Identity"
-        description="Contact Ink & Identity in Mpumalanga for custom printing, branded merchandise and personalised gifts."
+        description="Contact Ink & Identity at 3 Tamboti Street, White River. Message the studio on WhatsApp, or write to eksteentiane@gmail.com."
         path="/contact"
       />
       <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Contact" }]} />
-      <h1 className="display mt-8 text-6xl">Write to the studio</h1>
+      <h1 className="display mt-8 text-4xl sm:text-5xl md:text-6xl">Write to the studio</h1>
       <p className="mt-4 max-w-xl text-ivory/70">
-        Phone, email, hours and a street address appear here only once the owner has confirmed them. Until then, the quote form is the surest way to reach us.
+        Message us on WhatsApp and the note is already written. Email and the map are here if you would rather write or visit.
       </p>
 
-      <div className="mt-12 grid items-start gap-10 lg:grid-cols-12">
-        <div className="lg:col-span-5">
-          <dl className="space-y-5 text-sm">
+      <div className="mt-12">
+        <p className="eyebrow mb-4">Find us</p>
+        <StudioMap address={studio.mapAddress} mapUrl={studio.mapUrl} />
+      </div>
+
+      <div className="mt-10 grid items-start gap-10 lg:grid-cols-12">
+        <dl className="space-y-5 text-sm lg:col-span-7">
+          <div>
+            <dt className="eyebrow">Email</dt>
+            <dd className="mt-1">
+              <a href={`mailto:${studio.email}`} className="hover:text-gold">
+                {studio.email}
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt className="eyebrow">Phone</dt>
+            <dd className="mt-1">
+              {wa ? (
+                <a href={wa} className="hover:text-gold" target="_blank" rel="noreferrer">
+                  {studio.phone}
+                </a>
+              ) : (
+                <a href={`tel:${studio.phone.replace(/\s/g, "")}`} className="hover:text-gold">
+                  {studio.phone}
+                </a>
+              )}
+            </dd>
+          </div>
+          <div>
+            <dt className="eyebrow">Hours</dt>
+            <dd className="mt-1 whitespace-pre-line leading-relaxed">{studio.hours}</dd>
+          </div>
+          <div>
+            <dt className="eyebrow">Address</dt>
+            <dd className="mt-1">{studio.address}</dd>
+          </div>
+          {studio.instagramUrl ? (
             <div>
-              <dt className="eyebrow">Email</dt>
-              <dd className="mt-1">{settings?.email || "Not yet published"}</dd>
-            </div>
-            <div>
-              <dt className="eyebrow">Phone</dt>
-              <dd className="mt-1">{settings?.phone || "Not yet published"}</dd>
-            </div>
-            <div>
-              <dt className="eyebrow">Hours</dt>
-              <dd className="mt-1">{settings?.hours || "Not yet published"}</dd>
-            </div>
-            <div>
-              <dt className="eyebrow">Address</dt>
-              <dd className="mt-1">{settings?.address || "Not yet published"}</dd>
-            </div>
-            <div>
-              <dt className="eyebrow">Service areas</dt>
-              <dd className="mt-1 space-y-1">
-                {(settings?.serviceRegions ?? []).map((region) => (
-                  <p key={region}>{region}</p>
-                ))}
+              <dt className="eyebrow">Instagram</dt>
+              <dd className="mt-1">
+                <a href={studio.instagramUrl} className="hover:text-gold" target="_blank" rel="noreferrer">
+                  {studio.instagramHandle}
+                </a>
               </dd>
             </div>
-          </dl>
-          <div className="mt-10 flex flex-wrap gap-3">
-            <Button href="/quote">Request a quote</Button>
-            {wa ? (
-              <Button href={wa} variant="line">
-                WhatsApp
-              </Button>
-            ) : null}
-            <Button href={directions} variant="line">
-              Directions
-            </Button>
-            {settings?.instagramUrl ? (
-              <Button href={settings.instagramUrl} variant="line">
-                Instagram
-              </Button>
-            ) : null}
-            {settings?.facebookUrl ? (
-              <Button href={settings.facebookUrl} variant="line">
-                Facebook
-              </Button>
-            ) : null}
+          ) : null}
+          {studio.facebookUrl ? (
+            <div>
+              <dt className="eyebrow">Facebook</dt>
+              <dd className="mt-1">
+                <a href={studio.facebookUrl} className="hover:text-gold" target="_blank" rel="noreferrer">
+                  Ink & Identity
+                </a>
+              </dd>
+            </div>
+          ) : null}
+          <div>
+            <dt className="eyebrow">Service areas</dt>
+            <dd className="mt-1 space-y-1">
+              {studio.serviceRegions.map((region) => (
+                <p key={region}>{region}</p>
+              ))}
+            </dd>
           </div>
-        </div>
-        <div className="lg:col-span-7">
-          <p className="eyebrow mb-4">Find us</p>
-          <StudioMap address={settings?.address} mapUrl={settings?.mapUrl} />
+        </dl>
+        <div className="flex flex-col items-start gap-4 lg:col-span-5">
+          {wa ? (
+            <Button href={wa} className="w-full sm:w-auto">
+              Message on WhatsApp
+            </Button>
+          ) : null}
+          <Button href={`mailto:${studio.email}`} variant="line" className="w-full sm:w-auto">
+            Email the studio
+          </Button>
+          <Button href={directions} variant="line" className="w-full sm:w-auto">
+            Directions
+          </Button>
+          {studio.instagramUrl ? (
+            <Button href={studio.instagramUrl} variant="line" className="w-full sm:w-auto">
+              Instagram
+            </Button>
+          ) : null}
+          {studio.facebookUrl ? (
+            <Button href={studio.facebookUrl} variant="line" className="w-full sm:w-auto">
+              Facebook
+            </Button>
+          ) : null}
+          <SocialLinks />
         </div>
       </div>
     </div>

@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { useToast } from "@/components/ui/Toast";
 import { api } from "../../convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { AdminTable } from "./components/AdminTable";
 import { ImageUploader } from "./components/ImageUploader";
@@ -14,24 +14,71 @@ import type { Id } from "../../convex/_generated/dataModel";
 
 export function ProductsAdminPage() {
   const products = useQuery(api.products.listAdmin);
+  const categories = useQuery(api.collections.listCategoriesAdmin);
   const archive = useMutation(api.products.archive);
+  const [search, setSearch] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const visible = useMemo(() => {
+    const needle = search.trim().toLowerCase();
+    return (products ?? []).filter((product) => {
+      if (categoryId && product.categoryId !== categoryId) {
+        return false;
+      }
+      if (!needle) {
+        return true;
+      }
+      return [product.name, product.sku, product.categoryName, product.shortDescription]
+        .join(" ")
+        .toLowerCase()
+        .includes(needle);
+    });
+  }, [products, search, categoryId]);
+
   return (
     <div>
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="display text-5xl">Products</h1>
-        <Button href="/admin/products/new">New product</Button>
+      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+        <h1 className="display text-4xl sm:text-5xl">Products</h1>
+        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+          <Button href="/admin/featured" variant="line" className="w-full sm:w-auto">
+            Featured reel
+          </Button>
+          <Button href="/admin/products/new" className="w-full sm:w-auto">New product</Button>
+        </div>
+      </div>
+      {products === undefined ? (
+        <p className="mt-6 max-w-xl text-sm text-ivory/70">
+          The public shop is showing the studio catalogue. Database rows appear here once the studio backend is connected.
+        </p>
+      ) : null}
+      <div className="mt-8 grid gap-4 md:grid-cols-2">
+        <Input label="Search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Name, SKU, category" />
+        <Select label="Category" value={categoryId} onChange={(event) => setCategoryId(event.target.value)}>
+          <option value="">All categories</option>
+          {(categories ?? []).map((category) => (
+            <option key={category._id} value={category._id}>
+              {category.name}
+            </option>
+          ))}
+        </Select>
       </div>
       <div className="mt-8">
-        <AdminTable headers={["Name", "Status", "Availability", ""]}>
-          {(products ?? []).map((product) => (
+        <AdminTable headers={["Name", "Category", "Price", "Status", ""]}>
+          {visible.map((product) => (
             <tr key={product._id} className="border-t border-gold/20">
               <td className="px-4 py-3">
                 <Link to={`/admin/products/${product._id}`} className="hover:text-gold">
                   {product.name}
                 </Link>
               </td>
-              <td className="px-4 py-3">{product.published ? "Published" : "Draft"}</td>
-              <td className="px-4 py-3">{product.availability}</td>
+              <td className="px-4 py-3">{product.categoryName || "—"}</td>
+              <td className="px-4 py-3">
+                {product.priceDisplay === "show_price" && product.price != null
+                  ? `${product.currency} ${product.price}`
+                  : "On request"}
+              </td>
+              <td className="px-4 py-3">
+                {product.archived ? "Archived" : product.published ? "Published" : "Draft"}
+              </td>
               <td className="px-4 py-3">
                 <button
                   type="button"
@@ -110,6 +157,7 @@ export function ProductEditorPage() {
       seoDescription: value("seoDescription") || value("shortDescription"),
       published: value("published", source?.published ? "true" : "false") === "true",
       sortOrder: Number(value("sortOrder") || source?.sortOrder || 0),
+      ...(value("price") ? { price: Number(value("price")) } : {}),
     };
     try {
       if (isNew) {
@@ -139,6 +187,14 @@ export function ProductEditorPage() {
         ))}
       </Select>
       <Input label="SKU" value={value("sku")} onChange={(e) => setForm({ ...form, sku: e.target.value })} />
+      <Input
+        label="Price (ZAR)"
+        type="number"
+        min={0}
+        step="0.01"
+        value={value("price", source?.price != null ? String(source.price) : "")}
+        onChange={(e) => setForm({ ...form, price: e.target.value })}
+      />
       <Input label="Tags (comma)" value={value("tags", source?.tags.join(", ") ?? "")} onChange={(e) => setForm({ ...form, tags: e.target.value })} />
       <Select label="Price display" value={value("priceDisplay", source?.priceDisplay ?? "request_quote")} onChange={(e) => setForm({ ...form, priceDisplay: e.target.value })}>
         <option value="request_quote">Request a quote</option>

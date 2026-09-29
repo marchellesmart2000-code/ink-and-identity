@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { requireStaff } from "./lib/permissions";
+import { requireAdmin, requireStaff } from "./lib/permissions";
 import { resolveImage } from "./lib/media";
 import { isCampaignLive } from "./lib/quoteValidation";
 import { slugify } from "./lib/slug";
@@ -69,7 +69,7 @@ export const listAdmin = query({
 export const create = mutation({
   args: campaignFields,
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     if (args.endAt <= args.startAt) {
       throw new ConvexError("Campaign end must be after the start date.");
     }
@@ -86,7 +86,7 @@ export const create = mutation({
 export const update = mutation({
   args: { id: v.id("campaigns"), ...campaignFields },
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     const { id, ...rest } = args;
     if (rest.endAt <= rest.startAt) {
       throw new ConvexError("Campaign end must be after the start date.");
@@ -98,7 +98,7 @@ export const update = mutation({
 export const archive = mutation({
   args: { id: v.id("campaigns"), archived: v.boolean() },
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     await ctx.db.patch(args.id, { archived: args.archived, published: !args.archived });
   },
 });

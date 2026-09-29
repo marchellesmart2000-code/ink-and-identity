@@ -1,17 +1,16 @@
 import { Button } from "@/components/ui/Button";
 import { Drawer } from "@/components/ui/Drawer";
 import { Link } from "react-router-dom";
+import { SocialLinks } from "./SocialLinks";
 
 export function MobileNav({
   open,
   onClose,
   links,
-  whatsapp,
 }: {
   open: boolean;
   onClose: () => void;
   links: Array<{ to: string; label: string }>;
-  whatsapp: string | null;
 }) {
   return (
     <Drawer open={open} title="Menu" onClose={onClose}>
@@ -34,11 +33,7 @@ export function MobileNav({
         <Button href="/quote" className="w-full" onClick={onClose}>
           Request a quote
         </Button>
-        {whatsapp ? (
-          <Button href={whatsapp} variant="ghost" className="w-full" onClick={onClose}>
-            WhatsApp
-          </Button>
-        ) : null}
+        <SocialLinks />
       </div>
     </Drawer>
   );

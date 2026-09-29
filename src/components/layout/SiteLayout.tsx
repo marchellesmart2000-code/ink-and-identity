@@ -1,4 +1,3 @@
-import { AnnouncementBar } from "./AnnouncementBar";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { Outlet, useLocation } from "react-router-dom";
@@ -14,7 +13,6 @@ export function SiteLayout() {
       >
         Skip to content
       </a>
-      <AnnouncementBar />
       <Header />
       <AnimatePresence mode="wait">
         <motion.main

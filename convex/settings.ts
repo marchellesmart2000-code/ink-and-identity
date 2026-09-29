@@ -109,6 +109,7 @@ export const getPublic = query({
       finalCtaHeadline: settings.finalCtaHeadline,
       finalCtaBody: settings.finalCtaBody,
       sampleContent: settings.sampleContent,
+      featuredProductSlugs: settings.featuredProductSlugs ?? null,
       translationsAf: settings.translationsAf,
     };
   },
@@ -132,6 +133,22 @@ export const getAdmin = query({
       ? await ctx.storage.getUrl(settings.heroPosterStorageId)
       : null;
     return { ...settings, logoUrl, heroPosterUrl };
+  },
+});
+
+export const setFeaturedSlugs = mutation({
+  args: { slugs: v.array(v.string()) },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const existing = await ctx.db
+      .query("siteSettings")
+      .withIndex("by_key", (q) => q.eq("key", "site"))
+      .unique();
+    if (!existing) {
+      throw new Error("Site settings have not been initialised.");
+    }
+    const slugs = args.slugs.map((slug) => slug.trim()).filter(Boolean).slice(0, 24);
+    await ctx.db.patch(existing._id, { featuredProductSlugs: slugs });
   },
 });
 

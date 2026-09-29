@@ -26,7 +26,10 @@ export function Seo({
       <meta property="og:description" content={description} />
       <meta property="og:url" content={url} />
       <meta property="og:type" content={type} />
+      <meta property="og:locale" content="en_ZA" />
+      <meta property="og:site_name" content="Ink & Identity" />
       <meta property="og:image" content={imageUrl} />
+      <meta name="robots" content="index, follow" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />

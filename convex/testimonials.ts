@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { requireStaff } from "./lib/permissions";
+import { requireAdmin, requireStaff } from "./lib/permissions";
 
 export const listPublic = query({
   args: {},
@@ -38,7 +38,7 @@ export const upsert = mutation({
     sortOrder: v.number(),
   },
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     const { id, ...rest } = args;
     if (id) {
       await ctx.db.patch(id, rest);
@@ -54,7 +54,7 @@ export const upsert = mutation({
 export const archive = mutation({
   args: { id: v.id("approvedTestimonials"), archived: v.boolean() },
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     await ctx.db.patch(args.id, {
       archived: args.archived,
       ...(args.archived ? { published: false } : {}),

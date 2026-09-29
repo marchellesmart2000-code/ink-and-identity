@@ -8,7 +8,7 @@ export function PrivacyPage() {
         description="How Ink & Identity stores enquiries and private artwork."
         path="/privacy"
       />
-      <h1 className="display text-6xl">Privacy</h1>
+      <h1 className="display text-4xl sm:text-5xl md:text-6xl">Privacy</h1>
       <div className="mt-8 space-y-4 text-sm leading-relaxed text-ivory/70">
         <p>
           Quote requests, contact details and uploaded artwork are stored in Convex so the studio can prepare a response. Artwork is private by default and is not shown on the public website.
@@ -29,7 +29,7 @@ export function TermsPage() {
         description="Working terms for Ink & Identity quote requests."
         path="/terms"
       />
-      <h1 className="display text-6xl">Terms</h1>
+      <h1 className="display text-4xl sm:text-5xl md:text-6xl">Terms</h1>
       <div className="mt-8 space-y-4 text-sm leading-relaxed text-ivory/70">
         <p>
           Submitting an enquiry is a request for a quotation, not an order. Prices, lead times, printing methods and minimums are confirmed only in writing by the studio.
@@ -44,7 +44,7 @@ export function NotFoundPage() {
   return (
     <div className="container-page py-24 text-center">
       <Seo title="Page not found | Ink & Identity" description="This page does not exist." path="/404" />
-      <h1 className="display text-6xl">This page is not here.</h1>
+      <h1 className="display text-4xl sm:text-5xl md:text-6xl">This page is not here.</h1>
       <p className="mt-4 text-ivory/70">The link may have changed. Begin again from home, or send a quote.</p>
     </div>
   );

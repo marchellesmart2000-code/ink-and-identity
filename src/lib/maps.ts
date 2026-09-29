@@ -7,7 +7,7 @@ export function googleMapsEmbedSrc(address?: string | null, mapUrl?: string | nu
     return fromUrl;
   }
   const query = address?.trim() || STUDIO_TOWN_QUERY;
-  return mapsEmbedQuery(query);
+  return mapsEmbedQuery(query, address?.trim() ? 16 : 13);
 }
 
 export function googleMapsDirectionsUrl(address?: string | null, mapUrl?: string | null) {
@@ -19,8 +19,8 @@ export function googleMapsDirectionsUrl(address?: string | null, mapUrl?: string
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
 
-function mapsEmbedQuery(query: string) {
-  return `https://maps.google.com/maps?q=${encodeURIComponent(query)}&z=13&output=embed`;
+function mapsEmbedQuery(query: string, zoom = 13) {
+  return `https://maps.google.com/maps?q=${encodeURIComponent(query)}&z=${zoom}&output=embed`;
 }
 
 function embedFromMapsUrl(mapUrl?: string | null) {

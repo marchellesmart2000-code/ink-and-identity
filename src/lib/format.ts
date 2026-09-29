@@ -24,6 +24,17 @@ export const quoteStatusCopy: Record<string, string> = {
   archived: "Archived",
 };
 
+export function formatMoney(amount?: number | null, currency = "ZAR") {
+  if (amount == null || Number.isNaN(amount)) {
+    return null;
+  }
+  return new Intl.NumberFormat("en-ZA", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: amount % 1 === 0 ? 0 : 2,
+  }).format(amount);
+}
+
 export function formatDate(value?: number) {
   if (!value) {
     return "";

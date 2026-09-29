@@ -1,40 +1,40 @@
+import { CategoryCover } from "@/components/cards/CategoryCover";
 import { ProductCard } from "@/components/cards/ProductCard";
-import { PortfolioCard } from "@/components/cards/PortfolioCard";
+import { FeaturedReel } from "@/components/home/FeaturedReel";
 import { SegmentCard } from "@/components/cards/SegmentCard";
 import { ServiceCard } from "@/components/cards/ServiceCard";
 import { JsonLd, Seo } from "@/components/seo/Seo";
 import { Button } from "@/components/ui/Button";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { GoldRule } from "@/components/ui/GoldRule";
-import { Skeleton } from "@/components/ui/Skeleton";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { featuredProducts, publishedCategories } from "@/lib/catalogue";
 import { SAMPLE_HERO_VIDEO, SEGMENTS } from "@/lib/constants";
-import { siteOrigin, whatsappHref } from "@/lib/whatsapp";
+import { useFeaturedSlugs } from "@/lib/featured";
+import { resolveStudio } from "@/lib/studio";
+import { CONTACT_WHATSAPP_MESSAGE, siteOrigin, whatsappHref } from "@/lib/whatsapp";
 import { api } from "../../convex/_generated/api";
 import { useQuery } from "convex/react";
 import { motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function HomePage() {
   const settings = useSiteSettings();
+  const studio = resolveStudio(settings);
   const services = useQuery(api.services.listPublic);
-  const products = useQuery(api.products.listPublic, { sort: "featured" });
-  const projects = useQuery(api.portfolio.listPublic, {});
-  const social = useQuery(api.social.listPublic);
+  const featuredSlugs = useFeaturedSlugs(settings?.featuredProductSlugs);
+  const categories = publishedCategories();
+  const reel = featuredProducts(featuredSlugs);
   const testimonials = useQuery(api.testimonials.listPublic);
-  const wa = whatsappHref(
-    settings?.whatsapp ?? "",
-    "Hello Ink & Identity, I would like to start a project.",
-  );
+  const wa = whatsappHref(studio.whatsapp, CONTACT_WHATSAPP_MESSAGE);
   const origin = siteOrigin();
 
   return (
     <>
       <Seo
-        title={settings?.defaultSeoTitle ?? "Ink & Identity | Custom Printing & Branded Gifts in Mpumalanga"}
+        title={settings?.defaultSeoTitle ?? "Ink & Identity | Sublimation Studio in White River"}
         description={
           settings?.defaultSeoDescription ??
-          "Turn your idea into something remarkable with custom apparel, branded merchandise, personalised gifts and creative print solutions from Ink & Identity."
+          "Sublimated mugs, tumblers, dog tags, coasters, pillows and gifts from Ink & Identity in White River, Mpumalanga. Order on WhatsApp."
         }
         path="/"
       />
@@ -56,7 +56,7 @@ export function HomePage() {
             ...(settings?.email ? { email: settings.email } : {}),
             ...(settings?.phone ? { telephone: settings.phone } : {}),
             ...(settings?.address ? { address: settings.address } : {}),
-            sameAs: [settings?.instagramUrl, settings?.facebookUrl].filter(Boolean),
+            sameAs: [studio.instagramUrl, studio.facebookUrl].filter(Boolean),
           },
         ]}
       />
@@ -95,8 +95,8 @@ export function HomePage() {
           </motion.p>
           <div className="mt-8 flex w-full flex-col gap-3 sm:mt-10 sm:w-auto sm:flex-row sm:flex-wrap">
             <Button href="/quote" className="w-full sm:w-auto">Start a project</Button>
-            <Button href="/portfolio" variant="ghost" className="w-full sm:w-auto">
-              Explore the work
+            <Button href="/shop" variant="ghost" className="w-full sm:w-auto">
+              Explore the shop
             </Button>
           </div>
         </div>
@@ -112,14 +112,40 @@ export function HomePage() {
         </div>
       </section>
 
+      <FeaturedReel products={reel} />
+
+      <section className="container-wide py-12 md:py-20">
+        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="eyebrow">The work</p>
+            <h2 className="display mt-3 text-4xl md:text-6xl">Choose a category</h2>
+          </div>
+          <Button href="/shop" variant="line" className="w-full sm:w-auto">
+            Open the shop
+          </Button>
+        </div>
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {categories.map((category, index) => (
+            <CategoryCover
+              key={category.slug}
+              name={category.name}
+              description={category.description}
+              coverUrl={category.coverUrl}
+              coverAlt={category.coverAlt}
+              href={`/shop/category/${category.slug}`}
+              productCount={category.productCount}
+              index={index}
+            />
+          ))}
+        </div>
+      </section>
+
+      {(services ?? []).some((item) => item.featured) ? (
       <section className="container-wide py-14 md:py-24">
         <p className="eyebrow">Services</p>
         <h2 className="display mt-3 text-4xl md:text-6xl">Made for how you show up.</h2>
         <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {services === undefined ? (
-            <Skeleton className="h-80" />
-          ) : (
-            services
+          {(services ?? [])
               .filter((item) => item.featured)
               .map((service, index) => (
                 <ServiceCard
@@ -131,15 +157,20 @@ export function HomePage() {
                   imageUrl={service.heroImage?.url}
                   index={index}
                 />
-              ))
-          )}
+              ))}
         </div>
       </section>
+      ) : null}
 
       <section className="border-y border-gold/15 bg-charcoal">
         <div className="container-wide grid items-center gap-8 py-14 md:grid-cols-12 md:gap-12 md:py-24">
           <div className="md:col-span-6">
-            <div className="aspect-[4/5] rounded-sm border border-gold/20 ink-panel paper-grain" />
+            <img
+              src="/products/coffee-mugs/gideon-mug-coaster.jpg"
+              alt="Sublimated safari mug and matching coaster"
+              className="aspect-[4/5] w-full rounded-sm border border-gold/20 bg-ink object-contain"
+              decoding="async"
+            />
           </div>
           <div className="md:col-span-6">
             <p className="eyebrow">Process</p>
@@ -157,46 +188,38 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="container-wide py-14 md:py-24">
-        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
-          <div>
-            <p className="eyebrow">Selected work</p>
-            <h2 className="display mt-3 text-4xl md:text-5xl">Featured projects</h2>
-          </div>
-          <Button href="/portfolio" variant="line">
-            All work
-          </Button>
-        </div>
-        <div className="mt-12 grid gap-8 md:grid-cols-3">
-          {(projects ?? []).slice(0, 3).map((project) => (
-            <PortfolioCard
-              key={project._id}
-              title={project.title}
-              slug={project.slug}
-              summary={project.summary}
-              customerType={project.customerType}
-              productsUsed={project.productsUsed}
-              coverUrl={project.coverImage?.url}
-            />
-          ))}
-        </div>
-      </section>
-
       <section className="border-y border-gold/15 bg-charcoal py-14 md:py-24">
         <div className="container-wide">
-          <p className="eyebrow">Catalogue</p>
-          <h2 className="display mt-3 text-4xl md:text-5xl">Pieces to begin with</h2>
+          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
+            <div>
+              <p className="eyebrow">Catalogue</p>
+              <h2 className="display mt-3 text-4xl md:text-5xl">Pieces to begin with</h2>
+            </div>
+            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+              <Button href="/shop" variant="line" className="w-full sm:w-auto">
+                Browse the catalogue
+              </Button>
+              <Button href="/quote" className="w-full sm:w-auto">
+                Request a quote
+              </Button>
+            </div>
+          </div>
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {(products ?? []).slice(0, 8).map((product, index) => (
+            {reel.slice(0, 8).map((product, index) => (
               <ProductCard
-                key={product._id}
+                key={product.slug}
                 name={product.name}
                 slug={product.slug}
                 shortDescription={product.shortDescription}
-                coverUrl={product.cover?.url}
-                coverAlt={product.cover?.alt}
+                coverUrl={product.coverUrl}
+                coverAlt={product.coverAlt}
                 availability={product.availability}
                 featured={product.featured}
+                categoryName={product.categoryName}
+                categorySlug={product.categorySlug}
+                price={product.price}
+                currency={product.currency}
+                priceDisplay={product.priceDisplay}
                 index={index}
               />
             ))}
@@ -220,46 +243,12 @@ export function HomePage() {
       <section className="ink-panel paper-grain py-14 text-ivory md:py-24">
         <div className="container-wide">
           <h2 className="display text-4xl md:text-5xl">Who it is for</h2>
-          <div className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-12 grid gap-4 md:grid-cols-3">
             {SEGMENTS.map((segment) => (
               <SegmentCard key={segment.slug} title={segment.title} body={segment.body} href={segment.href} />
             ))}
           </div>
         </div>
-      </section>
-
-      <section className="container-wide py-14 md:py-24">
-        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="eyebrow">Studio diary</p>
-            <h2 className="display mt-3 text-4xl md:text-5xl">Instagram & Facebook</h2>
-          </div>
-          {settings?.instagramUrl ? (
-            <Button href={settings.instagramUrl} variant="line">
-              {settings.instagramHandle || "Instagram"}
-            </Button>
-          ) : null}
-        </div>
-        {social && social.length > 0 ? (
-          <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-4">
-            {social.map((post) => (
-              <a key={post._id} href={post.url} className="block aspect-square overflow-hidden rounded-sm border border-gold/20 bg-charcoal" target="_blank" rel="noreferrer">
-                {post.image ? (
-                  <img src={post.image.url} alt={post.image.alt || post.caption} className="h-full w-full object-cover" />
-                ) : (
-                  <div className="flex h-full items-end p-4 text-sm text-ivory/80">{post.caption}</div>
-                )}
-              </a>
-            ))}
-          </div>
-        ) : (
-          <div className="mt-10">
-            <EmptyState
-              title="A curated gallery lives here"
-              body="Selected Instagram and Facebook images are managed in the studio admin. Until they are published, visit the public profiles directly."
-            />
-          </div>
-        )}
       </section>
 
       {testimonials && testimonials.length > 0 ? (
@@ -279,13 +268,13 @@ export function HomePage() {
       ) : null}
 
       <section className="container-wide py-12 md:py-16">
-        <p className="eyebrow">Mpumalanga</p>
+        <p className="eyebrow">White River</p>
         <h2 className="display mt-3 text-4xl md:text-5xl">Close to the work</h2>
         <p className="mt-6 max-w-2xl text-base leading-relaxed text-ivory/70">
-          Service areas are published only once the owner confirms them. The current wording is editable in studio settings.
+          The studio is at {studio.address}. Pieces can also travel through PUDO.
         </p>
         <ul className="mt-6 space-y-2 text-sm text-ivory/70">
-          {(settings?.serviceRegions ?? []).map((region) => (
+          {studio.serviceRegions.map((region) => (
             <li key={region}>{region}</li>
           ))}
         </ul>
@@ -319,10 +308,21 @@ function HeroBackground({
   poster?: string | null;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [playVideo, setPlayVideo] = useState(false);
+
+  useEffect(() => {
+    const narrow = window.matchMedia("(max-width: 767px)").matches;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    if (narrow || reduced || connection?.saveData) {
+      return;
+    }
+    setPlayVideo(true);
+  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) {
+    if (!video || !playVideo) {
       return;
     }
     video.muted = true;
@@ -334,7 +334,13 @@ function HeroBackground({
     play();
     video.addEventListener("canplay", play);
     return () => video.removeEventListener("canplay", play);
-  }, [src]);
+  }, [playVideo, src]);
+
+  if (!playVideo) {
+    return poster ? (
+      <img src={poster} alt="" className="absolute inset-0 z-0 h-full w-full object-cover" />
+    ) : null;
+  }
 
   return (
     <video
@@ -344,7 +350,7 @@ function HeroBackground({
       muted
       loop
       playsInline
-      preload="auto"
+      preload="metadata"
       poster={poster ?? undefined}
     >
       <source src={src} type="video/mp4" />

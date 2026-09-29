@@ -11,12 +11,14 @@ export function UsersAdminPage() {
   const me = useQuery(api.users.me);
   const users = useQuery(api.users.listStaff);
   const createStaff = useAction(api.users.createStaff);
+  const updateOwnPassword = useAction(api.users.updateOwnPassword);
   const setStatus = useMutation(api.users.setUserStatus);
   const { push } = useToast();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<"admin" | "editor">("editor");
+  const [nextPassword, setNextPassword] = useState("");
 
   if (me && me.role !== "admin") {
     return <p>User management is limited to administrators.</p>;
@@ -48,6 +50,28 @@ export function UsersAdminPage() {
           <option value="admin">Admin</option>
         </Select>
         <Button type="submit">Create staff user</Button>
+      </form>
+      <form
+        className="mt-10 max-w-xl space-y-3"
+        onSubmit={async (event) => {
+          event.preventDefault();
+          try {
+            await updateOwnPassword({ password: nextPassword });
+            push("Password updated. Use it the next time you sign in.");
+            setNextPassword("");
+          } catch (error) {
+            push(error instanceof Error ? error.message : "Could not update the password.", "error");
+          }
+        }}
+      >
+        <h2 className="display text-3xl">Change your password</h2>
+        <Input
+          label="New password"
+          type="password"
+          value={nextPassword}
+          onChange={(e) => setNextPassword(e.target.value)}
+        />
+        <Button type="submit">Save password</Button>
       </form>
       <div className="mt-10">
         <AdminTable headers={["Name", "Email", "Role", "Status", ""]}>

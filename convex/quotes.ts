@@ -1,7 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { internal } from "./_generated/api";
-import { requireStaff } from "./lib/permissions";
+import { requireAdmin, requireStaff } from "./lib/permissions";
 import { validateQuoteRequest } from "./lib/quoteValidation";
 import {
   customerTypeValidator,
@@ -169,7 +169,7 @@ export const updateStatus = mutation({
     status: quoteStatusValidator,
   },
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     await ctx.db.patch(args.id, { status: args.status, updatedAt: Date.now() });
   },
 });
@@ -180,7 +180,7 @@ export const addNote = mutation({
     body: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = await requireStaff(ctx);
+    const user = await requireAdmin(ctx);
     const quote = await ctx.db.get(args.id);
     if (!quote) {
       throw new ConvexError("Quote request not found.");

@@ -1,4 +1,4 @@
-import { createAccount, getAuthUserId } from "@convex-dev/auth/server";
+import { createAccount, getAuthUserId, modifyAccountCredentials } from "@convex-dev/auth/server";
 import { ConvexError, v } from "convex/values";
 import { action, internalQuery, mutation, query } from "./_generated/server";
 import { internal } from "./_generated/api";
@@ -108,8 +108,8 @@ export const bootstrapAdmin = action({
     if (!isEmail(args.email)) {
       throw new ConvexError("Please use a valid email address.");
     }
-    if (args.password.length < 12) {
-      throw new ConvexError("Password must be at least 12 characters.");
+    if (args.password.length < 8) {
+      throw new ConvexError("Password must be at least 8 characters.");
     }
     await createAccount(ctx, {
       provider: "password",
@@ -149,8 +149,8 @@ export const createStaff = action({
     if (!isEmail(args.email)) {
       throw new ConvexError("Please use a valid email address.");
     }
-    if (args.password.length < 12) {
-      throw new ConvexError("Password must be at least 12 characters.");
+    if (args.password.length < 8) {
+      throw new ConvexError("Password must be at least 8 characters.");
     }
     await createAccount(ctx, {
       provider: "password",
@@ -163,6 +163,36 @@ export const createStaff = action({
         name: args.name.trim(),
         role: args.role,
         status: "active",
+      },
+    });
+    return { ok: true as const };
+  },
+});
+
+export const updateOwnPassword = action({
+  args: { password: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("You need to sign in to continue.");
+    }
+    const actor = await ctx.runQuery(internal.users.getBySubject, {
+      subject: identity.subject,
+    });
+    if (!actor || (actor.role !== "admin" && actor.role !== "editor")) {
+      throw new ConvexError("Studio access is required.");
+    }
+    if (!actor.email) {
+      throw new ConvexError("This account has no email.");
+    }
+    if (args.password.length < 8) {
+      throw new ConvexError("Password must be at least 8 characters.");
+    }
+    await modifyAccountCredentials(ctx, {
+      provider: "password",
+      account: {
+        id: actor.email.trim().toLowerCase(),
+        secret: args.password,
       },
     });
     return { ok: true as const };

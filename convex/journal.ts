@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { requireStaff } from "./lib/permissions";
+import { requireAdmin, requireStaff } from "./lib/permissions";
 import { resolveImage } from "./lib/media";
 import { slugify } from "./lib/slug";
 import { imageAssetValidator, publishStateValidator } from "./lib/validators";
@@ -77,7 +77,7 @@ export const getAdmin = query({
 export const create = mutation({
   args: postFields,
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     const slug = slugify(args.slug || args.title);
     const existing = await ctx.db
       .query("journalPosts")
@@ -100,7 +100,7 @@ export const create = mutation({
 export const update = mutation({
   args: { id: v.id("journalPosts"), ...postFields },
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     const { id, ...rest } = args;
     await ctx.db.patch(id, {
       ...rest,
@@ -114,7 +114,7 @@ export const update = mutation({
 export const archive = mutation({
   args: { id: v.id("journalPosts"), archived: v.boolean() },
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     await ctx.db.patch(args.id, {
       archived: args.archived,
       ...(args.archived ? { status: "draft" as const } : {}),

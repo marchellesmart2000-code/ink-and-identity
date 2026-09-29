@@ -1,5 +1,5 @@
 import { mutation } from "./_generated/server";
-import { requireStaff } from "./lib/permissions";
+import { requireAdmin } from "./lib/permissions";
 import {
   ALLOWED_QUOTE_MIME_TYPES,
   MAX_QUOTE_FILE_BYTES,
@@ -8,7 +8,7 @@ import {
 export const generatePublicUploadUrl = mutation({
   args: {},
   handler: async (ctx) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     return await ctx.storage.generateUploadUrl();
   },
 });

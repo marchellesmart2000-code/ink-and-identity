@@ -8,6 +8,9 @@ import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { useToast } from "@/components/ui/Toast";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { resolveStudio } from "@/lib/studio";
+import { enquiryWhatsappMessage, whatsappHref } from "@/lib/whatsapp";
+import { publishedProducts } from "@/lib/catalogue";
 import { api } from "../../convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -55,11 +58,46 @@ export function QuotePage() {
   });
 
   const selectedProduct = useMemo(
-    () => products?.find((item) => item.slug === form.productSlug),
+    () =>
+      publishedProducts().find((item) => item.slug === form.productSlug) ??
+      products?.find((item) => item.slug === form.productSlug),
     [products, form.productSlug],
   );
 
   async function onSubmit() {
+    if (form.honeypot.trim()) {
+      setDone(true);
+      return;
+    }
+    if (!form.consent) {
+      push("Please confirm we may send this enquiry.", "error");
+      return;
+    }
+    if (form.name.trim().length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      push("Add your name and email so WhatsApp opens with the brief filled in.", "error");
+      return;
+    }
+    const href = whatsappHref(
+      resolveStudio(settings).whatsapp,
+      enquiryWhatsappMessage({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        customerType: form.customerType,
+        needType: form.needType,
+        productName: selectedProduct?.name,
+        quantity: form.quantity,
+        brandNotes: form.brandNotes,
+        deadline: form.deadline,
+        budget: form.budget,
+        details: form.details,
+        fileNames: files.map((file) => file.name),
+      }),
+    );
+    if (!href) {
+      push("The studio WhatsApp number is not linked yet.", "error");
+      return;
+    }
     try {
       const uploaded = [];
       for (const file of files) {
@@ -100,15 +138,17 @@ export function QuotePage() {
             label: selectedProduct?.name || form.needType,
             quantity: Number(form.quantity) || 1,
             notes: form.details,
-            ...(selectedProduct ? { productId: selectedProduct._id } : {}),
+            ...(selectedProduct && "_id" in selectedProduct && selectedProduct._id
+              ? { productId: selectedProduct._id }
+              : {}),
           },
         ],
         files: uploaded,
       });
-      setDone(true);
-    } catch (error) {
-      push(error instanceof Error ? error.message : "We could not send that just now.", "error");
+    } catch {
+      // WhatsApp still carries the brief if the studio record cannot be saved.
     }
+    window.location.assign(href);
   }
 
   if (done) {
@@ -116,7 +156,7 @@ export function QuotePage() {
       <div className="container-page py-24 text-center">
         <Seo title="Quote sent | Ink & Identity" description="Your enquiry is with the studio." path="/quote" />
         <p className="eyebrow">Received</p>
-        <h1 className="display mt-4 text-6xl">Thank you.</h1>
+        <h1 className="display mt-4 text-4xl sm:text-5xl md:text-6xl">Thank you.</h1>
         <p className="mx-auto mt-6 max-w-lg text-ivory/70">
           Your enquiry is with the studio. We will reply with the next clear step — never a fabricated timeline.
         </p>
@@ -132,7 +172,7 @@ export function QuotePage() {
         path="/quote"
       />
       <p className="eyebrow">Enquiry</p>
-      <h1 className="display mt-3 text-6xl">Start a project</h1>
+      <h1 className="display mt-3 text-4xl sm:text-5xl md:text-6xl">Start a project</h1>
       <QuoteStepper step={step} total={STEPS.length} label={STEPS[step] ?? ""} />
       <AnimatePresence mode="wait">
         <motion.div
@@ -193,9 +233,9 @@ export function QuotePage() {
                 onChange={(e) => setForm({ ...form, productSlug: e.target.value })}
               >
                 <option value="">A custom request</option>
-                {(products ?? []).map((product) => (
-                  <option key={product._id} value={product.slug}>
-                    {product.name}
+                {publishedProducts().map((product) => (
+                  <option key={product.slug} value={product.slug}>
+                    {product.categoryName} — {product.name}
                   </option>
                 ))}
               </Select>
@@ -272,7 +312,7 @@ export function QuotePage() {
           </Button>
         ) : (
           <Button type="button" onClick={() => void onSubmit()}>
-            Send enquiry
+            Send on WhatsApp
           </Button>
         )}
       </div>

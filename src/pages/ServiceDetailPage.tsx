@@ -41,7 +41,7 @@ export function ServiceDetailPage() {
         ]}
       />
       <p className="eyebrow mt-8">{service.eyebrow}</p>
-      <h1 className="display mt-3 text-6xl md:text-7xl">{service.name}</h1>
+      <h1 className="display mt-3 text-4xl sm:text-5xl md:text-7xl">{service.name}</h1>
       <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ivory/70">{service.summary}</p>
       <div className="mt-12 grid gap-12 md:grid-cols-12">
         <div className="md:col-span-7 space-y-6 text-base leading-relaxed text-ivory/70">

@@ -6,12 +6,6 @@ export const SEGMENTS = [
     href: "/services/branded-apparel",
   },
   {
-    slug: "schools-teams",
-    title: "Schools & Teams",
-    body: "Apparel and kit that belong to a side, a school or a club.",
-    href: "/services/event-team-merchandise",
-  },
-  {
     slug: "events-celebrations",
     title: "Events & Celebrations",
     body: "Coordinated pieces for a date that matters — launches, gatherings, thanks.",

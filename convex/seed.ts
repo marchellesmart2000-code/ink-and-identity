@@ -41,9 +41,19 @@ export const apply = internalMutation({
         .query("categories")
         .withIndex("by_slug", (q) => q.eq("slug", category.slug))
         .unique();
-      categoryIds[category.slug] = found
-        ? found._id
-        : await ctx.db.insert("categories", category);
+      if (found) {
+        await ctx.db.patch(found._id, {
+          name: category.name,
+          description: category.description,
+          seoTitle: category.seoTitle,
+          seoDescription: category.seoDescription,
+          sortOrder: category.sortOrder,
+          published: category.published,
+        });
+        categoryIds[category.slug] = found._id;
+      } else {
+        categoryIds[category.slug] = await ctx.db.insert("categories", category);
+      }
     }
 
     const collectionIds: Record<string, Id<"collections">> = {};
@@ -160,7 +170,7 @@ const defaultSettings = {
   hours: "",
   instagramUrl: "https://www.instagram.com/inkand.identity/",
   instagramHandle: "@inkand.identity",
-  facebookUrl: "",
+  facebookUrl: "https://www.facebook.com/share/19b1nbaNSY/",
   mapUrl: "",
   heroVideoUrl: "",
   heroEyebrow: "INK & IDENTITY · CUSTOM PRINTS",
@@ -242,7 +252,11 @@ const sampleCategories = [
   {
     name: "Apparel",
     slug: "apparel",
-    description: "Custom garments for brands, teams, schools and personal wear.",
+    description:
+      "Sublimated tees, jackets, scrubs and teamwear. Full-colour print that sits in the fabric, made for brands, schools and sides.",
+    seoTitle: "Sublimated apparel | Ink & Identity",
+    seoDescription:
+      "Shop sublimated apparel from Ink & Identity in White River — custom tees, jackets and teamwear printed in full colour.",
     sortOrder: 1,
     published: true,
     sampleContent: true,
@@ -250,7 +264,11 @@ const sampleCategories = [
   {
     name: "Drinkware",
     slug: "drinkware",
-    description: "Mugs, cups and bottles made to carry a name or a mark.",
+    description:
+      "Sublimated mugs, bottles and cups. A name or a mark, printed edge to edge and made to be used every day.",
+    seoTitle: "Sublimated drinkware | Ink & Identity",
+    seoDescription:
+      "Sublimated mugs and bottles from Ink & Identity. Order a custom piece on WhatsApp.",
     sortOrder: 2,
     published: true,
     sampleContent: true,
@@ -258,7 +276,11 @@ const sampleCategories = [
   {
     name: "Desk & stationery",
     slug: "desk-stationery",
-    description: "Notebooks, mouse pads and desk pieces with a quiet branded presence.",
+    description:
+      "Sublimated notebooks, mouse pads and desk pieces with room for a mark, a pattern or a quiet brand.",
+    seoTitle: "Sublimated desk pieces | Ink & Identity",
+    seoDescription:
+      "Sublimated notebooks and desk pieces from Ink & Identity in White River.",
     sortOrder: 3,
     published: true,
     sampleContent: true,
@@ -266,7 +288,11 @@ const sampleCategories = [
   {
     name: "Gifting",
     slug: "gifting",
-    description: "Personalised gifts and considered sets for people and occasions.",
+    description:
+      "Sublimated gifts for a person, a client or a date. Tell us the piece and we will print it to keep.",
+    seoTitle: "Sublimated gifts | Ink & Identity",
+    seoDescription:
+      "Personalised sublimated gifts from Ink & Identity. Order on WhatsApp with the piece already named.",
     sortOrder: 4,
     published: true,
     sampleContent: true,
@@ -274,7 +300,11 @@ const sampleCategories = [
   {
     name: "Accessories",
     slug: "accessories",
-    description: "Caps, socks, lunch boxes and the finishing pieces around a kit.",
+    description:
+      "Sublimated caps, socks, lunch boxes and the smaller pieces that finish a kit.",
+    seoTitle: "Sublimated accessories | Ink & Identity",
+    seoDescription:
+      "Sublimated caps, socks and accessories from Ink & Identity.",
     sortOrder: 5,
     published: true,
     sampleContent: true,

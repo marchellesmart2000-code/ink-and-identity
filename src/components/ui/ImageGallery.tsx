@@ -78,7 +78,7 @@ export function ImageGallery({ images }: { images: GalleryImage[] }) {
         <img
           src={active.url}
           alt={active.alt}
-          className="aspect-[4/5] w-full rounded-sm object-cover"
+          className="aspect-square w-full rounded-sm bg-ink object-contain sm:aspect-[4/5]"
         />
       </button>
       {images.length > 1 ? (

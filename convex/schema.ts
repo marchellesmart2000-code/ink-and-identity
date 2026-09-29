@@ -82,6 +82,7 @@ export default defineSchema({
     finalCtaHeadline: v.string(),
     finalCtaBody: v.string(),
     sampleContent: v.boolean(),
+    featuredProductSlugs: v.optional(v.array(v.string())),
     translationsAf: v.optional(
       v.object({
         navServices: v.string(),
@@ -130,6 +131,8 @@ export default defineSchema({
     name: v.string(),
     slug: v.string(),
     description: v.string(),
+    seoTitle: v.optional(v.string()),
+    seoDescription: v.optional(v.string()),
     customerType: v.optional(customerTypeValidator),
     sortOrder: v.number(),
     published: v.boolean(),

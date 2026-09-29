@@ -14,7 +14,7 @@ export function AboutPage() {
         path="/about"
       />
       <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "About" }]} />
-      <h1 className="display mt-8 max-w-3xl text-6xl md:text-7xl">A studio for things people keep.</h1>
+      <h1 className="display mt-8 max-w-3xl text-4xl sm:text-5xl md:text-7xl">A studio for things people keep.</h1>
       <p className="mt-8 max-w-2xl text-lg leading-relaxed text-ivory/70">{settings?.aboutStory}</p>
       {settings?.ownerName ? (
         <p className="mt-6 text-sm text-gold">Guided by {settings.ownerName}.</p>
@@ -29,7 +29,7 @@ export function AboutPage() {
         ))}
       </div>
       <section className="mt-20 max-w-2xl">
-        <h2 className="display text-5xl">How the work happens</h2>
+        <h2 className="display text-4xl sm:text-5xl">How the work happens</h2>
         <p className="mt-6 leading-relaxed text-ivory/70">{settings?.aboutProcess}</p>
         <div className="mt-8">
           <Button href="/quote">Start a conversation</Button>

@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { cn } from "@/lib/cn";
-import { whatsappHref } from "@/lib/whatsapp";
 import { Menu, X } from "lucide-react";
+import { SocialLinks } from "./SocialLinks";
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { MobileNav } from "./MobileNav";
@@ -11,8 +11,6 @@ import { MobileNav } from "./MobileNav";
 const links = [
   { to: "/services", label: "Services" },
   { to: "/shop", label: "Shop" },
-  { to: "/portfolio", label: "Work" },
-  { to: "/journal", label: "Journal" },
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
 ];
@@ -23,10 +21,6 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const overHero = location.pathname === "/" && !scrolled;
-  const wa = whatsappHref(
-    settings?.whatsapp ?? "",
-    "Hello Ink & Identity, I would like to talk about a project.",
-  );
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -70,17 +64,13 @@ export function Header() {
           ))}
         </nav>
         <div className="hidden items-center gap-3 lg:flex">
+          <SocialLinks />
           <Button href="/services" variant="ghost">
             Explore services
           </Button>
           <Button href="/quote" variant="gold">
             Request a quote
           </Button>
-          {wa ? (
-            <Button href={wa} variant="ghost">
-              WhatsApp
-            </Button>
-          ) : null}
         </div>
         <IconButton
           label={open ? "Close menu" : "Open menu"}
@@ -92,7 +82,7 @@ export function Header() {
           {open ? <X size={18} /> : <Menu size={18} />}
         </IconButton>
       </div>
-      <MobileNav open={open} onClose={() => setOpen(false)} links={links} whatsapp={wa} />
+      <MobileNav open={open} onClose={() => setOpen(false)} links={links} />
     </header>
   );
 }

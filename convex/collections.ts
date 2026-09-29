@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { requireStaff } from "./lib/permissions";
+import { requireAdmin, requireStaff } from "./lib/permissions";
 import { resolveImage } from "./lib/media";
 import { slugify } from "./lib/slug";
 import { imageAssetValidator } from "./lib/validators";
@@ -67,7 +67,7 @@ export const listAdmin = query({
 export const create = mutation({
   args: collectionFields,
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     const slug = slugify(args.slug || args.name);
     const existing = await ctx.db
       .query("collections")
@@ -88,7 +88,7 @@ export const create = mutation({
 export const update = mutation({
   args: { id: v.id("collections"), ...collectionFields },
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     const { id, ...rest } = args;
     await ctx.db.patch(id, { ...rest, slug: slugify(rest.slug || rest.name) });
   },
@@ -97,10 +97,18 @@ export const update = mutation({
 export const archive = mutation({
   args: { id: v.id("collections"), archived: v.boolean() },
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     await ctx.db.patch(args.id, { archived: args.archived, published: !args.archived });
   },
 });
+
+function isListedProduct(product: {
+  published: boolean;
+  archived: boolean;
+  availability: string;
+}) {
+  return product.published && !product.archived && product.availability !== "archived";
+}
 
 export const listCategories = query({
   args: {},
@@ -109,7 +117,30 @@ export const listCategories = query({
       .query("categories")
       .withIndex("by_published", (q) => q.eq("published", true))
       .collect();
-    return categories.sort((a, b) => a.sortOrder - b.sortOrder);
+    const products = (await ctx.db.query("products").collect()).filter(isListedProduct);
+    return categories
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .map((category) => ({
+        ...category,
+        productCount: products.filter((product) => product.categoryId === category._id).length,
+      }));
+  },
+});
+
+export const getCategoryBySlug = query({
+  args: { slug: v.string() },
+  handler: async (ctx, args) => {
+    const category = await ctx.db
+      .query("categories")
+      .withIndex("by_slug", (q) => q.eq("slug", args.slug))
+      .unique();
+    if (!category || !category.published) {
+      return null;
+    }
+    const products = (await ctx.db.query("products").collect()).filter(
+      (product) => isListedProduct(product) && product.categoryId === category._id,
+    );
+    return { ...category, productCount: products.length };
   },
 });
 
@@ -129,28 +160,36 @@ export const upsertCategory = mutation({
     name: v.string(),
     slug: v.optional(v.string()),
     description: v.string(),
+    seoTitle: v.optional(v.string()),
+    seoDescription: v.optional(v.string()),
     published: v.boolean(),
     sortOrder: v.number(),
   },
   handler: async (ctx, args) => {
-    await requireStaff(ctx);
+    await requireAdmin(ctx);
     const slug = slugify(args.slug || args.name);
+    const clash = await ctx.db
+      .query("categories")
+      .withIndex("by_slug", (q) => q.eq("slug", slug))
+      .unique();
+    if (clash && clash._id !== args.id) {
+      throw new ConvexError("A category with this slug already exists.");
+    }
+    const fields = {
+      name: args.name.trim(),
+      slug,
+      description: args.description.trim(),
+      seoTitle: args.seoTitle?.trim() || undefined,
+      seoDescription: args.seoDescription?.trim() || undefined,
+      published: args.published,
+      sortOrder: args.sortOrder,
+    };
     if (args.id) {
-      await ctx.db.patch(args.id, {
-        name: args.name,
-        slug,
-        description: args.description,
-        published: args.published,
-        sortOrder: args.sortOrder,
-      });
+      await ctx.db.patch(args.id, fields);
       return args.id;
     }
     return await ctx.db.insert("categories", {
-      name: args.name,
-      slug,
-      description: args.description,
-      published: args.published,
-      sortOrder: args.sortOrder,
+      ...fields,
       sampleContent: false,
     });
   },

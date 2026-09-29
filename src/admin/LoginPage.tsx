@@ -26,7 +26,10 @@ export function LoginPage() {
   async function onLogin(event: React.FormEvent) {
     event.preventDefault();
     try {
-      await signIn("password", { email, password, flow: "signIn" });
+      const result = await signIn("password", { email, password, flow: "signIn" });
+      if (result.signingIn === false) {
+        push("Those details did not match a studio account.", "error");
+      }
     } catch {
       push("Those details did not match a studio account.", "error");
     }
@@ -46,7 +49,7 @@ export function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-ink paper-grain px-4 text-ivory">
       <div className="w-full max-w-md rounded-sm border border-gold/25 bg-charcoal p-8">
         <p className="eyebrow">Ink & Identity</p>
-        <h1 className="display mt-3 text-5xl">Studio</h1>
+        <h1 className="display mt-3 text-4xl sm:text-5xl">Studio</h1>
         <form className="mt-8 space-y-4" onSubmit={mode === "login" ? onLogin : onBootstrap}>
           {mode === "bootstrap" ? (
             <>
