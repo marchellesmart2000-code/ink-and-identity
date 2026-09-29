@@ -142,7 +142,16 @@ export const MORE_CATEGORIES: Category[] = [
       "Sublimated 15oz and 20oz stainless skinny tumblers from Ink & Identity in White River. Order on WhatsApp.",
     sortOrder: 5,
     coverSlug: "snethemba-tumbler",
-    products: fromFolder("skinny-tumblers", [
+    products: [
+      piece(
+        "brandy-collection",
+        "Brandy collection tumblers",
+        "A pair of tall frosted tumblers.",
+        "/products/frosted-glasses/brandy-collection.jpg",
+        "Two sublimated frosted tumblers, one about listening and one a brandy collection",
+        { featured: true },
+      ),
+      ...fromFolder("skinny-tumblers", [
       ["charmaine-family-tumbler", "Family photo tumbler", "charmaine-family.jpg"],
       ["charmaine-baby-tumbler", "Baby photo tumbler", "charmaine-baby.jpg"],
       ["snethemba-tumbler", "Portrait tumbler", "snethemba.jpg"],
@@ -157,6 +166,7 @@ export const MORE_CATEGORIES: Category[] = [
       ["milandri-tumbler", "Script tumbler", "milandri.jpg"],
       ["brother-tumbler", "Brother tumbler", "brother.jpg"],
     ]),
+    ],
   },
   {
     slug: "water-bottles",
@@ -206,25 +216,6 @@ export const MORE_CATEGORIES: Category[] = [
         "Frosted beer mugs printed Then, Braai & Drinking, and Now.",
         "/products/beer-mugs/braai-drinking.jpg",
         "Three sublimated frosted beer mugs",
-      ),
-    ],
-  },
-  {
-    slug: "frosted-glasses",
-    name: "Frosted glasses",
-    description: "Sublimated tall frosted glasses.",
-    seoTitle: "Sublimated frosted glasses | Ink & Identity",
-    seoDescription: "Sublimated frosted glasses from Ink & Identity in White River. Order on WhatsApp.",
-    sortOrder: 9,
-    coverSlug: "brandy-collection",
-    products: [
-      piece(
-        "brandy-collection",
-        "Brandy collection glasses",
-        "A pair of tall frosted glasses.",
-        "/products/frosted-glasses/brandy-collection.jpg",
-        "Two sublimated frosted glasses, one about listening and one a brandy collection",
-        { featured: true },
       ),
     ],
   },
