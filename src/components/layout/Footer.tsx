@@ -1,5 +1,6 @@
 import { GoldRule } from "@/components/ui/GoldRule";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { publishedCategories } from "@/lib/catalogue";
 import { resolveStudio } from "@/lib/studio";
 import { CONTACT_WHATSAPP_MESSAGE, whatsappHref } from "@/lib/whatsapp";
 import { Link } from "react-router-dom";
@@ -8,6 +9,7 @@ import { SocialLinks } from "./SocialLinks";
 export function Footer() {
   const settings = useSiteSettings();
   const studio = resolveStudio(settings);
+  const categories = publishedCategories();
   const wa = whatsappHref(studio.whatsapp, CONTACT_WHATSAPP_MESSAGE);
   return (
     <footer className="mt-4 border-t border-gold/20 bg-ink text-ivory paper-grain md:mt-6">
@@ -63,7 +65,19 @@ export function Footer() {
           </div>
         </div>
         <GoldRule className="my-2" />
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-ivory/60">
+        <nav aria-label="Footer" className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-ivory/70">
+          <Link to="/shop" className="hover:text-gold">Shop</Link>
+          <Link to="/services" className="hover:text-gold">Services</Link>
+          <Link to="/about" className="hover:text-gold">About</Link>
+          <Link to="/contact" className="hover:text-gold">Contact</Link>
+          <Link to="/quote" className="hover:text-gold">Request a quote</Link>
+          {categories.map((category) => (
+            <Link key={category.slug} to={`/shop/category/${category.slug}`} className="hover:text-gold">
+              {category.name}
+            </Link>
+          ))}
+        </nav>
+        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-ivory/60">
           <SocialLinks />
           {studio.instagramUrl ? (
             <a href={studio.instagramUrl} className="hover:text-gold" target="_blank" rel="noreferrer">

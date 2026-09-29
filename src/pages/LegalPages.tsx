@@ -43,7 +43,7 @@ export function TermsPage() {
 export function NotFoundPage() {
   return (
     <div className="container-page py-24 text-center">
-      <Seo title="Page not found | Ink & Identity" description="This page does not exist." path="/404" />
+      <Seo title="Page not found | Ink & Identity" description="This page does not exist on the Ink & Identity site." path="/404" noindex />
       <h1 className="display text-4xl sm:text-5xl md:text-6xl">This page is not here.</h1>
       <p className="mt-4 text-ivory/70">The link may have changed. Begin again from home, or send a quote.</p>
     </div>

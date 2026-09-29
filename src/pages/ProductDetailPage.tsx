@@ -1,5 +1,5 @@
 import { ProductCard } from "@/components/cards/ProductCard";
-import { JsonLd, Seo } from "@/components/seo/Seo";
+import { breadcrumbJsonLd, JsonLd, Seo } from "@/components/seo/Seo";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -50,18 +50,30 @@ export function ProductDetailPage() {
       <div className="container-wide py-10 md:py-16">
       <Seo title={product.seoTitle} description={product.seoDescription} path={`/shop/${product.slug}`} />
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "Product",
-          name: product.name,
-          description: product.shortDescription,
-          category: product.categoryName,
-        }}
+        data={[
+          breadcrumbJsonLd(siteOrigin(), [
+            { name: "Home", path: "/" },
+            { name: "Shop", path: "/shop" },
+            { name: product.categoryName, path: `/shop/category/${product.categorySlug}` },
+            { name: product.name, path: `/shop/${product.slug}` },
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: product.name,
+            description: product.seoDescription || product.shortDescription,
+            category: product.categoryName,
+            image: product.gallery[0]?.url ? `${siteOrigin()}${product.gallery[0].url}` : undefined,
+            url: `${siteOrigin()}/shop/${product.slug}`,
+            brand: { "@type": "Brand", name: "Ink & Identity" },
+          },
+        ]}
       />
       <Breadcrumbs
         items={[
           { label: "Home", href: "/" },
           { label: "Shop", href: "/shop" },
+          { label: product.categoryName, href: `/shop/category/${product.categorySlug}` },
           { label: product.name },
         ]}
       />

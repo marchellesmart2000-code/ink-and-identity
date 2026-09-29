@@ -7,12 +7,14 @@ export function Seo({
   path,
   image,
   type = "website",
+  noindex = false,
 }: {
   title: string;
   description: string;
   path: string;
   image?: string;
   type?: string;
+  noindex?: boolean;
 }) {
   const origin = siteOrigin();
   const url = `${origin}${path}`;
@@ -29,13 +31,26 @@ export function Seo({
       <meta property="og:locale" content="en_ZA" />
       <meta property="og:site_name" content="Ink & Identity" />
       <meta property="og:image" content={imageUrl} />
-      <meta name="robots" content="index, follow" />
+      <meta name="robots" content={noindex ? "noindex, follow" : "index, follow"} />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={imageUrl} />
     </Helmet>
   );
+}
+
+export function breadcrumbJsonLd(origin: string, items: Array<{ name: string; path?: string }>) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      ...(item.path ? { item: `${origin}${item.path}` } : {}),
+    })),
+  };
 }
 
 export function JsonLd({ data }: { data: Record<string, unknown> | Array<Record<string, unknown>> }) {
