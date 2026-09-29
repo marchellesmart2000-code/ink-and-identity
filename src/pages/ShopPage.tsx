@@ -1,4 +1,3 @@
-import { CategoryCover } from "@/components/cards/CategoryCover";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { breadcrumbJsonLd, JsonLd, Seo } from "@/components/seo/Seo";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -9,14 +8,16 @@ import { applyFeatured, publishedCategories, publishedProducts } from "@/lib/cat
 import { useFeaturedSlugs } from "@/lib/featured";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { siteOrigin } from "@/lib/whatsapp";
-import { Link } from "react-router-dom";
 import { useMemo, useState } from "react";
 
 export function ShopPage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [sort, setSort] = useState<"featured" | "name" | "newest">("featured");
-  const categories = publishedCategories();
+  const categories = useMemo(
+    () => [...publishedCategories()].sort((a, b) => a.name.localeCompare(b.name)),
+    [],
+  );
   const settings = useSiteSettings();
   const featuredSlugs = useFeaturedSlugs(settings?.featuredProductSlugs);
   const catalogue = useMemo(
@@ -24,24 +25,6 @@ export function ShopPage() {
     [featuredSlugs],
   );
   const needle = search.trim().toLowerCase();
-  const visibleCategories = useMemo(() => {
-    const matched = new Set(
-      catalogue
-        .filter((product) =>
-          `${product.name} ${product.shortDescription} ${product.categoryName}`.toLowerCase().includes(needle),
-        )
-        .map((product) => product.categorySlug),
-    );
-    return categories.filter((item) => {
-      if (category !== "all" && item.slug !== category) {
-        return false;
-      }
-      if (!needle) {
-        return true;
-      }
-      return matched.has(item.slug) || `${item.name} ${item.description}`.toLowerCase().includes(needle);
-    });
-  }, [catalogue, categories, category, needle]);
   const products = useMemo(() => {
     const rows = catalogue.filter((product) => {
       if (category !== "all" && product.categorySlug !== category) {
@@ -62,6 +45,22 @@ export function ShopPage() {
   }, [catalogue, category, needle, sort]);
   const origin = siteOrigin();
   const visible = products;
+  const suggestions = useMemo(() => {
+    if (!needle) {
+      return [];
+    }
+    return catalogue
+      .filter((product) => {
+        if (category !== "all" && product.categorySlug !== category) {
+          return false;
+        }
+        return (
+          product.name.toLowerCase() !== needle &&
+          `${product.name} ${product.categoryName}`.toLowerCase().includes(needle)
+        );
+      })
+      .slice(0, 8);
+  }, [catalogue, category, needle]);
 
   return (
     <div className="container-wide py-10 md:py-16">
@@ -111,12 +110,35 @@ export function ShopPage() {
       </p>
 
       <div className="mt-8 grid gap-4 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_12rem]">
-        <Input
-          label="Search"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder="Category, product, or use"
-        />
+        <div className="relative">
+          <Input
+            label="Search"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Start typing a product name"
+            autoComplete="off"
+          />
+          {suggestions.length > 0 ? (
+            <ul className="absolute z-20 mt-1 max-h-64 w-full overflow-auto rounded-sm border border-gold/30 bg-charcoal shadow-soft">
+              {suggestions.map((product) => (
+                <li key={product.slug}>
+                  <button
+                    type="button"
+                    className="flex w-full items-baseline justify-between gap-3 px-4 py-2.5 text-left text-sm text-ivory hover:bg-gold/10"
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => {
+                      setSearch(product.name);
+                      setCategory(product.categorySlug);
+                    }}
+                  >
+                    <span>{product.name}</span>
+                    <span className="shrink-0 text-[0.62rem] tracking-[0.14em] uppercase text-gold">{product.categoryName}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
         <Select label="Category" value={category} onChange={(event) => setCategory(event.target.value)}>
           <option value="all">All categories</option>
           {categories.map((item) => (
@@ -131,41 +153,7 @@ export function ShopPage() {
           <option value="newest">Newest</option>
         </Select>
       </div>
-      <nav aria-label="Product categories" className="mt-4 flex gap-2 overflow-x-auto pb-1">
-        <button
-          type="button"
-          onClick={() => setCategory("all")}
-          className={`shrink-0 rounded-full border px-3 py-2 text-[0.68rem] tracking-[0.14em] uppercase ${category === "all" ? "border-gold text-gold" : "border-gold/30 text-ivory/70"}`}
-        >
-          All
-        </button>
-        {categories.map((item) => (
-          <Link
-            key={item.slug}
-            to={`/shop/category/${item.slug}`}
-            className={`shrink-0 rounded-full border px-3 py-2 text-[0.68rem] tracking-[0.14em] uppercase hover:border-gold hover:text-gold ${category === item.slug ? "border-gold text-gold" : "border-gold/30 text-ivory/70"}`}
-          >
-            {item.name}
-          </Link>
-        ))}
-      </nav>
 
-      {visibleCategories.length > 0 ? (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {visibleCategories.map((item, index) => (
-            <CategoryCover
-              key={item.slug}
-              name={item.name}
-              description={item.description}
-              coverUrl={item.coverUrl}
-              coverAlt={item.coverAlt}
-              href={`/shop/category/${item.slug}`}
-              productCount={item.productCount}
-              index={index}
-            />
-          ))}
-        </div>
-      ) : null}
       {visible.length === 0 ? (
         <div className="mt-12">
           <EmptyState title="Nothing matches just yet" body="Try another word, or open a category and order a custom sublimated piece." />

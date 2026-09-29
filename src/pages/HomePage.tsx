@@ -71,16 +71,17 @@ export function HomePage() {
         <div className="container-wide relative z-20 flex min-h-[100svh] flex-col justify-end pb-10 pt-28 sm:pb-16 sm:pt-36 md:pb-20">
           <motion.p
             className="eyebrow"
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
           >
             {settings?.heroEyebrow ?? "INK & IDENTITY · CUSTOM PRINTS"}
           </motion.p>
           <motion.h1
             className="display mt-4 max-w-4xl text-[2.35rem] text-ivory sm:mt-6 sm:text-6xl md:text-8xl"
-            initial={{ opacity: 0, y: 18 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            transition={{ duration: 0.2, delay: 0.04 }}
           >
             {settings?.heroHeadline ?? "Your idea, beautifully made."}
           </motion.h1>
@@ -89,7 +90,7 @@ export function HomePage() {
             className="mt-4 max-w-xl text-sm leading-relaxed text-ivory/75 sm:mt-6 sm:text-base md:text-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
+            transition={{ duration: 0.2, delay: 0.08 }}
           >
             {settings?.heroSupport}
           </motion.p>

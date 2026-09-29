@@ -17,14 +17,18 @@ export function CategoryPage() {
   const { slug = "" } = useParams();
   const [search, setSearch] = useState("");
   const studio = resolveStudio(useSiteSettings());
-  const category = useQuery(api.collections.getCategoryBySlug, { slug });
-  const products = useQuery(api.products.listPublic, {
-    categorySlug: slug,
-    search: search || undefined,
-    sort: "featured",
-  });
-
   const studioCategory = publishedCategory(slug);
+  const category = useQuery(api.collections.getCategoryBySlug, studioCategory ? "skip" : { slug });
+  const products = useQuery(
+    api.products.listPublic,
+    studioCategory
+      ? "skip"
+      : {
+          categorySlug: slug,
+          search: search || undefined,
+          sort: "featured",
+        },
+  );
   const studioProducts = useMemo(() => {
     const needle = search.trim().toLowerCase();
     return publishedProducts(slug).filter((product) => {

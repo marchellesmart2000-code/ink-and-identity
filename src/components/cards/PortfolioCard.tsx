@@ -19,9 +19,10 @@ export function PortfolioCard({
 }) {
   return (
     <motion.article
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.2 }}
       className="group"
     >
       <Link to={`/portfolio/${slug}`} className="block">
@@ -30,7 +31,7 @@ export function PortfolioCard({
             <img
               src={coverUrl}
               alt={title}
-              className="aspect-[5/4] w-full object-cover transition-transform duration-700 group-hover:scale-105"
+              className="aspect-[5/4] w-full object-cover transition-transform duration-200 group-hover:scale-105"
               loading="lazy"
             />
           ) : (

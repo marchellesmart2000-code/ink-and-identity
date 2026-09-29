@@ -1,10 +1,13 @@
+import { useLayoutEffect } from "react";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { Outlet, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
 
 export function SiteLayout() {
-  const location = useLocation();
+  const { pathname } = useLocation();
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
   return (
     <div className="min-h-dvh bg-ink text-ivory">
       <a
@@ -14,19 +17,9 @@ export function SiteLayout() {
         Skip to content
       </a>
       <Header />
-      <AnimatePresence mode="wait">
-        <motion.main
-          id="main"
-          key={location.pathname}
-          className="overflow-x-clip"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.35 }}
-        >
-          <Outlet />
-        </motion.main>
-      </AnimatePresence>
+      <main id="main" key={pathname} className="page-enter overflow-x-clip">
+        <Outlet />
+      </main>
       <Footer />
     </div>
   );

@@ -34,15 +34,17 @@ export function Modal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.16 }}
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-title"
         >
           <motion.div
             className="max-h-[90vh] w-full max-w-2xl overflow-auto rounded-sm border border-gold/25 bg-charcoal p-6 text-ivory shadow-soft"
-            initial={{ y: 16, opacity: 0 }}
+            initial={{ y: 8, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 16, opacity: 0 }}
+            exit={{ y: 8, opacity: 0 }}
+            transition={{ duration: 0.16 }}
           >
             <div className="mb-4 flex items-center justify-between gap-4">
               <h2 id="modal-title" className="display text-3xl">

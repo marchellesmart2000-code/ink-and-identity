@@ -53,6 +53,30 @@
     outline-offset: 3px;
   }
 
+  select option {
+    background: #141414;
+    color: #f4ead6;
+  }
+
+  @keyframes page-enter {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .page-enter {
+    animation: page-enter 140ms ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .page-enter {
+      animation: none;
+    }
+  }
+
   ::selection {
     background: color-mix(in srgb, var(--color-gold) 55%, black);
     color: var(--color-ivory);

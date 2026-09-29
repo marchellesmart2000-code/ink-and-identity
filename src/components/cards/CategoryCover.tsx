@@ -22,10 +22,10 @@ export function CategoryCover({
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 18 }}
+      initial={{ opacity: 0, y: 10 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ delay: index * 0.05 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.2, delay: Math.min(index * 0.03, 0.12) }}
     >
       <Link to={href} className="group block h-full">
         <div className="relative overflow-hidden rounded-sm border border-gold/20 bg-ink transition-colors group-hover:border-gold">
@@ -33,7 +33,7 @@ export function CategoryCover({
             <img
               src={coverUrl}
               alt={coverAlt ?? name}
-              className="aspect-[4/5] w-full object-contain p-6 transition-transform duration-700 group-hover:scale-[1.03]"
+              className="aspect-[4/5] w-full object-contain p-6 transition-transform duration-200 group-hover:scale-[1.03]"
               loading="lazy"
             />
           ) : (

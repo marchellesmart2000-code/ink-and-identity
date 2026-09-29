@@ -48,9 +48,10 @@ export function ProductCard({
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 18 }}
+      initial={{ opacity: 0, y: 10 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.2, delay: Math.min(index * 0.03, 0.12) }}
       className="group flex h-full flex-col"
     >
       <Link to={`/shop/${slug}`} className="block">
@@ -59,7 +60,7 @@ export function ProductCard({
             <img
               src={coverUrl}
               alt={coverAlt ?? name}
-              className="aspect-square w-full bg-ink object-contain p-3 transition-transform duration-700 group-hover:scale-[1.03] sm:aspect-[4/5]"
+              className="aspect-square w-full bg-ink object-contain p-3 transition-transform duration-200 group-hover:scale-[1.03] sm:aspect-[4/5]"
               loading="lazy"
               decoding="async"
             />

@@ -132,7 +132,7 @@ export function FeaturedReel({ products }: { products: ShopProduct[] }) {
                   draggable={false}
                   decoding="async"
                   loading={index < 4 ? "eager" : "lazy"}
-                  className="aspect-square w-full object-contain p-3 transition-transform duration-700 group-hover:scale-[1.03]"
+                  className="aspect-square w-full object-contain p-3 transition-transform duration-200 group-hover:scale-[1.03]"
                 />
               </div>
               <p className="mt-3 text-[0.62rem] tracking-[0.18em] uppercase text-gold">{product.categoryName}</p>

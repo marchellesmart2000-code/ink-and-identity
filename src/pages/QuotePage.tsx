@@ -177,9 +177,10 @@ export function QuotePage() {
       <AnimatePresence mode="wait">
         <motion.div
           key={step}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.12 }}
           className="mt-10 space-y-6"
         >
           {step === 0 ? (
