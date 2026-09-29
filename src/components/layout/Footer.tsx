@@ -22,8 +22,8 @@ export function Footer() {
             </p>
           </div>
           <div className="md:col-span-3">
-            <p className="eyebrow">Contact</p>
-            <ul className="mt-1.5 space-y-0 text-xs leading-tight text-ivory/75">
+            <p className="eyebrow text-[0.72rem]">Contact</p>
+            <ul className="mt-2 space-y-0.5 text-sm leading-relaxed text-ivory/75">
               <li>
                 <a href={`mailto:${studio.email}`} className="hover:text-gold">
                   {studio.email}
@@ -39,25 +39,11 @@ export function Footer() {
                 )}
               </li>
               <li className="whitespace-pre-line">{studio.hours}</li>
-              {studio.instagramUrl ? (
-                <li>
-                  <a href={studio.instagramUrl} className="hover:text-gold" target="_blank" rel="noreferrer">
-                    {studio.instagramHandle}
-                  </a>
-                </li>
-              ) : null}
-              {studio.facebookUrl ? (
-                <li>
-                  <a href={studio.facebookUrl} className="hover:text-gold" target="_blank" rel="noreferrer">
-                    Facebook
-                  </a>
-                </li>
-              ) : null}
             </ul>
           </div>
           <div className="md:col-span-4">
-            <p className="eyebrow">Service areas</p>
-            <ul className="mt-1.5 space-y-0 text-xs leading-tight text-ivory/75">
+            <p className="eyebrow text-[0.72rem]">Service areas</p>
+            <ul className="mt-2 space-y-0.5 text-sm leading-relaxed text-ivory/75">
               {studio.serviceRegions.map((region) => (
                 <li key={region}>{region}</li>
               ))}
@@ -79,16 +65,6 @@ export function Footer() {
         </nav>
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-ivory/60">
           <SocialLinks />
-          {studio.instagramUrl ? (
-            <a href={studio.instagramUrl} className="hover:text-gold" target="_blank" rel="noreferrer">
-              Instagram
-            </a>
-          ) : null}
-          {studio.facebookUrl ? (
-            <a href={studio.facebookUrl} className="hover:text-gold" target="_blank" rel="noreferrer">
-              Facebook
-            </a>
-          ) : null}
           <Link to="/privacy" className="hover:text-gold">
             Privacy
           </Link>
@@ -100,9 +76,9 @@ export function Footer() {
           <div className="flex justify-center">
           <a
             href="https://www.lowveldweb.co.za"
-            className="inline-flex max-w-full items-center gap-2.5 rounded-full border border-gold/45 py-1 pl-1 pr-3 transition-colors hover:border-gold sm:pr-4"
+            className="inline-flex max-w-full items-center gap-2 rounded-full border border-gold/45 py-0.5 pl-0.5 pr-2.5 transition-colors hover:border-gold sm:pr-3"
           >
-            <span className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-full border border-gold">
+            <span className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-full border border-gold">
               <img
                 src="/brand/lowveld-web-mark.png?v=2"
                 alt=""
@@ -111,7 +87,7 @@ export function Footer() {
                 className="size-[78%] object-contain"
               />
             </span>
-            <span className="display text-sm italic leading-tight tracking-normal text-ivory sm:text-[1.05rem]">
+            <span className="display text-xs italic leading-tight tracking-normal text-ivory sm:text-sm">
               Professionally made by <span className="not-italic text-gold">Lowveld Web</span>
             </span>
           </a>
