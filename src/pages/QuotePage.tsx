@@ -64,22 +64,11 @@ export function QuotePage() {
     [products, form.productSlug],
   );
 
-  async function onSubmit() {
-    if (form.honeypot.trim()) {
-      setDone(true);
-      return;
-    }
-    if (!form.consent) {
-      push("Please confirm we may send this enquiry.", "error");
-      return;
-    }
-    if (form.name.trim().length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
-      push("Add your name and email so WhatsApp opens with the brief filled in.", "error");
-      return;
-    }
-    const href = whatsappHref(
-      resolveStudio(settings).whatsapp,
+  const studio = resolveStudio(settings);
+  const whatsappMessage = useMemo(
+    () =>
       enquiryWhatsappMessage({
+        brandName: settings?.brandName,
         name: form.name,
         email: form.email,
         phone: form.phone,
@@ -93,11 +82,14 @@ export function QuotePage() {
         details: form.details,
         fileNames: files.map((file) => file.name),
       }),
-    );
-    if (!href) {
-      push("The studio WhatsApp number is not linked yet.", "error");
-      return;
-    }
+    [settings?.brandName, form, selectedProduct?.name, files],
+  );
+  const whatsappLink = useMemo(
+    () => whatsappHref(studio.whatsapp, whatsappMessage),
+    [studio.whatsapp, whatsappMessage],
+  );
+
+  async function saveQuoteInBackground() {
     try {
       const uploaded = [];
       for (const file of files) {
@@ -148,7 +140,27 @@ export function QuotePage() {
     } catch {
       // WhatsApp still carries the brief if the studio record cannot be saved.
     }
-    window.location.assign(href);
+  }
+
+  function onSendQuoteClick() {
+    if (form.honeypot.trim()) {
+      setDone(true);
+      return;
+    }
+    if (!form.consent) {
+      push("Please confirm we may send this enquiry.", "error");
+      return;
+    }
+    if (form.name.trim().length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      push("Add your name and email so WhatsApp opens with the brief filled in.", "error");
+      return;
+    }
+    if (!whatsappLink) {
+      push("The studio WhatsApp number is not linked yet.", "error");
+      return;
+    }
+    void saveQuoteInBackground();
+    window.location.href = whatsappLink;
   }
 
   if (done) {
@@ -284,13 +296,10 @@ export function QuotePage() {
           {step === 6 ? (
             <>
               <div className="rounded-sm border border-gold/25 bg-charcoal p-6 text-sm leading-relaxed text-ivory/80">
-                <p>
-                  {form.name} · {form.email}
-                </p>
-                <p className="mt-2">
-                  {form.customerType} · {form.needType} · qty {form.quantity}
-                </p>
-                {selectedProduct ? <p className="mt-2">{selectedProduct.name}</p> : null}
+                <p className="eyebrow">WhatsApp message preview</p>
+                <pre className="mt-4 whitespace-pre-wrap font-sans text-sm leading-relaxed text-ivory/85">
+                  {whatsappMessage}
+                </pre>
               </div>
               <Checkbox
                 label={settings?.privacyConsentCopy ?? "I agree that the studio may store this enquiry."}
@@ -312,8 +321,8 @@ export function QuotePage() {
             Continue
           </Button>
         ) : (
-          <Button type="button" onClick={() => void onSubmit()}>
-            Send on WhatsApp
+          <Button type="button" onClick={onSendQuoteClick}>
+            Request a quote
           </Button>
         )}
       </div>

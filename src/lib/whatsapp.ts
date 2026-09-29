@@ -45,7 +45,16 @@ export function whatsappHref(number: string, message: string): string | null {
   return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
 }
 
+function quoteAnswer(label: string, value: string): string[] {
+  const answer = value.trim();
+  if (!answer) {
+    return [];
+  }
+  return [label, answer, ""];
+}
+
 export function enquiryWhatsappMessage(input: {
+  brandName?: string;
   name: string;
   email: string;
   phone: string;
@@ -59,25 +68,26 @@ export function enquiryWhatsappMessage(input: {
   details: string;
   fileNames: string[];
 }): string {
+  const brand = input.brandName?.trim() || "Ink & Identity";
   const lines = [
-    "Hello Ink & Identity, I would like a quote.",
+    `Hello ${brand}, I would like a quote.`,
     "",
-    `Name: ${input.name.trim()}`,
-    `Email: ${input.email.trim()}`,
-    input.phone.trim() ? `Phone: ${input.phone.trim()}` : null,
-    `This is for: ${CUSTOMER_LABELS[input.customerType] ?? input.customerType}`,
-    `Need: ${input.needType.trim()}`,
-    input.productName ? `Piece: ${input.productName}` : null,
-    `Quantity: ${input.quantity.trim() || "1"}`,
-    input.brandNotes.trim() ? `Design notes: ${input.brandNotes.trim()}` : null,
-    input.deadline.trim() ? `Deadline: ${input.deadline.trim()}` : null,
-    input.budget.trim() ? `Budget: ${input.budget.trim()}` : null,
-    input.details.trim() ? `Details: ${input.details.trim()}` : null,
-    input.fileNames.length
-      ? `Artwork to send in this chat: ${input.fileNames.join(", ")}`
-      : null,
+    ...quoteAnswer("Name", input.name),
+    ...quoteAnswer("Email", input.email),
+    ...quoteAnswer("Phone", input.phone),
+    ...quoteAnswer("Who is this for?", CUSTOMER_LABELS[input.customerType] ?? input.customerType),
+    ...quoteAnswer("What do you need?", input.needType),
+    ...(input.productName ? quoteAnswer("Product", input.productName) : []),
+    ...quoteAnswer("Quantity", input.quantity.trim() || "1"),
+    ...quoteAnswer("Design notes", input.brandNotes),
+    ...quoteAnswer("Deadline", input.deadline),
+    ...quoteAnswer("Budget", input.budget),
+    ...quoteAnswer("Anything else", input.details),
+    ...(input.fileNames.length
+      ? quoteAnswer("Artwork to send in this chat", input.fileNames.join(", "))
+      : []),
   ];
-  return lines.filter((line) => line !== null).join("\n");
+  return lines.join("\n").trim();
 }
 
 export function siteOrigin(): string {
