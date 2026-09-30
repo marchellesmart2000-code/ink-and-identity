@@ -9,7 +9,11 @@ import { Textarea } from "@/components/ui/Textarea";
 import { useToast } from "@/components/ui/Toast";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { resolveStudio } from "@/lib/studio";
-import { QUOTE_CATEGORIES, quoteCategoryName } from "@/lib/constants";
+import {
+  QUOTE_CATEGORIES,
+  quoteCategoryName,
+  type QuoteCategorySlug,
+} from "@/lib/constants";
 import { publishedProduct } from "@/lib/catalogue";
 import { enquiryWhatsappMessage, whatsappHref } from "@/lib/whatsapp";
 import { api } from "../../convex/_generated/api";
@@ -252,7 +256,9 @@ export function QuotePage() {
               <Select
                 label="Product category"
                 value={form.productCategory}
-                onChange={(e) => setForm({ ...form, productCategory: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, productCategory: e.target.value as QuoteCategorySlug })
+                }
               >
                 {QUOTE_CATEGORIES.map((category) => (
                   <option key={category.slug} value={category.slug}>

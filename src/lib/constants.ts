@@ -14,6 +14,8 @@ export const QUOTE_CATEGORIES = [
   { slug: "other-products", name: "Other Products" },
 ] as const;
 
+export type QuoteCategorySlug = (typeof QUOTE_CATEGORIES)[number]["slug"];
+
 export function quoteCategoryName(slug: string): string | undefined {
   return QUOTE_CATEGORIES.find((category) => category.slug === slug)?.name;
 }
