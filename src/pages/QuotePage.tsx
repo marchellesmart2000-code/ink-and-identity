@@ -1,3 +1,4 @@
+import { QuoteCategoryPicker } from "@/components/quote/QuoteCategoryPicker";
 import { QuoteStepper } from "@/components/quote/QuoteStepper";
 import { Seo } from "@/components/seo/Seo";
 import { Button } from "@/components/ui/Button";
@@ -8,16 +9,12 @@ import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { useToast } from "@/components/ui/Toast";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import { resolveStudio } from "@/lib/studio";
-import {
-  QUOTE_CATEGORIES,
-  quoteCategoryName,
-  type QuoteCategorySlug,
-} from "@/lib/constants";
+import { QUOTE_CATEGORIES, quoteCategoryName } from "@/lib/constants";
 import { publishedProduct } from "@/lib/catalogue";
+import { resolveStudio } from "@/lib/studio";
 import { enquiryWhatsappMessage, whatsappHref } from "@/lib/whatsapp";
 import { api } from "../../convex/_generated/api";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -25,7 +22,7 @@ import { useSearchParams } from "react-router-dom";
 const STEPS = [
   "Your details",
   "Who it is for",
-  "What you need",
+  "Product category",
   "Pieces & quantities",
   "Design & timing",
   "Artwork",
@@ -34,20 +31,18 @@ const STEPS = [
 
 export function QuotePage() {
   const settings = useSiteSettings();
-  const services = useQuery(api.services.listPublic);
   const generateUploadUrl = useMutation(api.files.generateQuoteUploadUrl);
   const submit = useMutation(api.quotes.submit);
   const { push } = useToast();
   const [params] = useSearchParams();
   const preProduct = params.get("product") ?? "";
-  const preService = params.get("service") ?? "";
   const preCategory = useMemo(() => {
     if (!preProduct) {
-      return "";
+      return QUOTE_CATEGORIES[0].slug;
     }
     const product = publishedProduct(preProduct);
     if (!product) {
-      return "";
+      return QUOTE_CATEGORIES[0].slug;
     }
     const normalized = product.categoryName.toLowerCase();
     return (
@@ -55,7 +50,7 @@ export function QuotePage() {
         (category) =>
           category.name.toLowerCase() === normalized ||
           normalized.includes(category.name.toLowerCase()),
-      )?.slug ?? ""
+      )?.slug ?? QUOTE_CATEGORIES[0].slug
     );
   }, [preProduct]);
 
@@ -67,8 +62,7 @@ export function QuotePage() {
     email: "",
     phone: "",
     customerType: "business",
-    needType: preService || "custom request",
-    productCategory: preCategory || QUOTE_CATEGORIES[0].slug,
+    productCategory: preCategory,
     quantity: "1",
     details: "",
     brandNotes: "",
@@ -89,7 +83,7 @@ export function QuotePage() {
         email: form.email,
         phone: form.phone,
         customerType: form.customerType,
-        needType: form.needType,
+        needType: selectedCategoryName ?? "",
         productName: selectedCategoryName,
         quantity: form.quantity,
         brandNotes: form.brandNotes,
@@ -133,7 +127,7 @@ export function QuotePage() {
           | "event"
           | "personal"
           | "other",
-        needType: form.needType,
+        needType: selectedCategoryName ?? "custom request",
         details: form.details,
         brandNotes: form.brandNotes,
         deadline: form.deadline,
@@ -143,7 +137,7 @@ export function QuotePage() {
         honeypot: form.honeypot,
         lines: [
           {
-            label: selectedCategoryName || form.needType,
+            label: selectedCategoryName ?? "custom request",
             quantity: Number(form.quantity) || 1,
             notes: form.details,
           },
@@ -232,48 +226,20 @@ export function QuotePage() {
             </Select>
           ) : null}
           {step === 2 ? (
-            <Select
-              label="What you need"
-              value={form.needType}
-              onChange={(e) => setForm({ ...form, needType: e.target.value })}
-            >
-              <option value="apparel">Apparel</option>
-              <option value="gifts">Gifts</option>
-              <option value="corporate branding">Corporate branding</option>
-              <option value="drinkware">Drinkware</option>
-              <option value="stationery">Stationery</option>
-              <option value="event merchandise">Event merchandise</option>
-              <option value="custom request">Custom request</option>
-              {(services ?? []).map((service) => (
-                <option key={service._id} value={service.name}>
-                  {service.name}
-                </option>
-              ))}
-            </Select>
+            <QuoteCategoryPicker
+              label="Choose a product category"
+              value={form.productCategory}
+              onChange={(productCategory) => setForm({ ...form, productCategory })}
+            />
           ) : null}
           {step === 3 ? (
-            <>
-              <Select
-                label="Product category"
-                value={form.productCategory}
-                onChange={(e) =>
-                  setForm({ ...form, productCategory: e.target.value as QuoteCategorySlug })
-                }
-              >
-                {QUOTE_CATEGORIES.map((category) => (
-                  <option key={category.slug} value={category.slug}>
-                    {category.name}
-                  </option>
-                ))}
-              </Select>
-              <Input
-                label="Quantity"
-                type="number"
-                min={1}
-                value={form.quantity}
-                onChange={(e) => setForm({ ...form, quantity: e.target.value })}
-              />
-            </>
+            <Input
+              label="Quantity"
+              type="number"
+              min={1}
+              value={form.quantity}
+              onChange={(e) => setForm({ ...form, quantity: e.target.value })}
+            />
           ) : null}
           {step === 4 ? (
             <>

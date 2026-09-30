@@ -1,5 +1,5 @@
 export const QUOTE_CATEGORIES = [
-  { slug: "custom-request", name: "Custom Request" },
+  { slug: "custom-request", name: "A custom request" },
   { slug: "acrylic-keyrings", name: "Acrylic Keyrings" },
   { slug: "coffee-mugs", name: "Coffee Mugs" },
   { slug: "click-pens", name: "Click Pens" },

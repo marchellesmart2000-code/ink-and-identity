@@ -76,8 +76,10 @@ export function enquiryWhatsappMessage(input: {
     ...quoteAnswer("Email", input.email),
     ...quoteAnswer("Phone", input.phone),
     ...quoteAnswer("Who is this for?", CUSTOMER_LABELS[input.customerType] ?? input.customerType),
-    ...quoteAnswer("What do you need?", input.needType),
-    ...(input.productName ? quoteAnswer("Product", input.productName) : []),
+    ...quoteAnswer(
+      "Product category",
+      input.productName?.trim() || input.needType,
+    ),
     ...quoteAnswer("Quantity", input.quantity.trim() || "1"),
     ...quoteAnswer("Design notes", input.brandNotes),
     ...quoteAnswer("Deadline", input.deadline),

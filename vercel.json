@@ -7,6 +7,15 @@
   ],
   "headers": [
     {
+      "source": "/((?!assets/|media/|products/|brand/|placeholders/|favicon|robots.txt|sitemap.xml|og-default).*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
       "source": "/assets/(.*)",
       "headers": [
         {

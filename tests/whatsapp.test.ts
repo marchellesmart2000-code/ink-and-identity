@@ -9,8 +9,8 @@ describe("enquiryWhatsappMessage", () => {
       email: "jane@example.com",
       phone: "0821234567",
       customerType: "business",
-      needType: "apparel",
-      productName: "Photo mug",
+      needType: "Coffee Mugs",
+      productName: "Coffee Mugs",
       quantity: "12",
       brandNotes: "Blue logo on white",
       deadline: "Next Friday",
@@ -24,8 +24,8 @@ describe("enquiryWhatsappMessage", () => {
     expect(message).toContain("Email\njane@example.com");
     expect(message).toContain("Phone\n0821234567");
     expect(message).toContain("Who is this for?\nBusiness");
-    expect(message).toContain("What do you need?\napparel");
-    expect(message).toContain("Product\nPhoto mug");
+    expect(message).toContain("Product category\nCoffee Mugs");
+    expect(message).not.toContain("Dog tags");
     expect(message).toContain("Quantity\n12");
     expect(message).toContain("Design notes\nBlue logo on white");
     expect(message).toContain("Deadline\nNext Friday");
@@ -40,7 +40,8 @@ describe("enquiryWhatsappMessage", () => {
       email: "jane@example.com",
       phone: "",
       customerType: "personal",
-      needType: "gifts",
+      needType: "A custom request",
+      productName: "A custom request",
       quantity: "1",
       brandNotes: "",
       deadline: "",
@@ -62,7 +63,8 @@ describe("whatsappHref", () => {
       email: "jane@example.com",
       phone: "",
       customerType: "personal",
-      needType: "gifts",
+      needType: "A custom request",
+      productName: "A custom request",
       quantity: "2",
       brandNotes: "Gold text",
       deadline: "",
