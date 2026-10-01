@@ -4,20 +4,30 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ImageGallery } from "@/components/ui/ImageGallery";
-import { publishedProduct, relatedProducts } from "@/lib/catalogue";
+import { publishedCategory, publishedProduct, relatedProducts } from "@/lib/catalogue";
+import { convexEnabled } from "@/lib/convex-enabled";
 import { availabilityCopy } from "@/lib/format";
 import { resolveStudio } from "@/lib/studio";
 import { orderWhatsappMessage, siteOrigin, whatsappHref } from "@/lib/whatsapp";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { api } from "../../convex/_generated/api";
 import { useQuery } from "convex/react";
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 
 export function ProductDetailPage() {
   const { slug = "" } = useParams();
-  const live = useQuery(api.products.getBySlug, { slug });
   const catalogueProduct = publishedProduct(slug);
+  const categoryMatch = publishedCategory(slug);
+  const live = useQuery(
+    api.products.getBySlug,
+    catalogueProduct || categoryMatch || !convexEnabled() ? "skip" : { slug },
+  );
   const studio = resolveStudio(useSiteSettings());
+
+  if (categoryMatch) {
+    return <Navigate to={`/shop/category/${slug}`} replace />;
+  }
+
   const product = catalogueProduct
     ? {
         ...catalogueProduct,
@@ -30,6 +40,7 @@ export function ProductDetailPage() {
         exampleProjects: [] as { slug: string; title: string }[],
       }
     : live;
+
   if (product === undefined) {
     return <div className="container-wide py-24">Loading…</div>;
   }

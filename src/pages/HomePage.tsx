@@ -7,6 +7,7 @@ import { JsonLd, Seo } from "@/components/seo/Seo";
 import { Button } from "@/components/ui/Button";
 import { GoldRule } from "@/components/ui/GoldRule";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { convexEnabled } from "@/lib/convex-enabled";
 import { featuredProducts, publishedCategories } from "@/lib/catalogue";
 import { SAMPLE_HERO_VIDEO, SEGMENTS } from "@/lib/constants";
 import { useFeaturedSlugs } from "@/lib/featured";
@@ -20,11 +21,11 @@ import { useEffect, useRef, useState } from "react";
 export function HomePage() {
   const settings = useSiteSettings();
   const studio = resolveStudio(settings);
-  const services = useQuery(api.services.listPublic);
+  const services = useQuery(api.services.listPublic, convexEnabled() ? {} : "skip");
   const featuredSlugs = useFeaturedSlugs(settings?.featuredProductSlugs);
   const categories = publishedCategories();
   const reel = featuredProducts(featuredSlugs);
-  const testimonials = useQuery(api.testimonials.listPublic);
+  const testimonials = useQuery(api.testimonials.listPublic, convexEnabled() ? {} : "skip");
   const wa = whatsappHref(studio.whatsapp, CONTACT_WHATSAPP_MESSAGE);
   const origin = siteOrigin();
 
