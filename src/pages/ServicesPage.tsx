@@ -3,12 +3,13 @@ import { ServiceCard } from "@/components/cards/ServiceCard";
 import { JsonLd, Seo } from "@/components/seo/Seo";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
+import { convexEnabled } from "@/lib/convex-enabled";
 import { publishedCategories } from "@/lib/catalogue";
 import { api } from "../../convex/_generated/api";
 import { useQuery } from "convex/react";
 
 export function ServicesPage() {
-  const services = useQuery(api.services.listPublic);
+  const services = useQuery(api.services.listPublic, convexEnabled() ? {} : "skip");
   return (
     <div className="container-wide py-10 md:py-16">
       <Seo

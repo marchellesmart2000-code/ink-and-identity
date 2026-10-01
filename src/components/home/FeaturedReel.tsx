@@ -195,14 +195,16 @@ export function FeaturedReel({ products }: { products: ShopProduct[] }) {
               className="group w-[72vw] max-w-[280px] shrink-0 sm:w-[300px]"
             >
               <div className="overflow-hidden rounded-sm border border-gold/20 bg-ink">
-                <img
-                  src={product.coverUrl}
-                  alt=""
-                  draggable={false}
-                  decoding="async"
-                  loading={index < 4 ? "eager" : "lazy"}
-                  className="aspect-square w-full object-contain p-3 transition-transform duration-200 group-hover:scale-[1.03]"
-                />
+                <div className="flex aspect-[4/5] items-center justify-center">
+                  <img
+                    src={product.coverUrl}
+                    alt=""
+                    draggable={false}
+                    decoding="async"
+                    loading={index < 4 ? "eager" : "lazy"}
+                    className="h-full w-full object-contain object-center transition-transform duration-200 group-hover:scale-[1.02]"
+                  />
+                </div>
               </div>
               <p className="mt-3 text-[0.62rem] tracking-[0.18em] uppercase text-gold">{product.categoryName}</p>
               <h3 className="display mt-1 text-2xl text-ivory sm:text-3xl">{product.name}</h3>

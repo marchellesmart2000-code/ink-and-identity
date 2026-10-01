@@ -76,11 +76,9 @@ export function ImageGallery({ images }: { images: GalleryImage[] }) {
   return (
     <div>
       <button type="button" className="block w-full" onClick={() => setOpen(index)}>
-        <img
-          src={active.url}
-          alt={active.alt}
-          className="aspect-square w-full rounded-sm bg-ink object-contain sm:aspect-[4/5]"
-        />
+        <div className="flex aspect-[4/5] items-center justify-center rounded-sm bg-ink">
+          <img src={active.url} alt={active.alt} className="h-full w-full object-contain object-center" />
+        </div>
       </button>
       {images.length > 1 ? (
         <div className="mt-3 grid grid-cols-5 gap-2">
@@ -92,7 +90,7 @@ export function ImageGallery({ images }: { images: GalleryImage[] }) {
               aria-label={`Show image ${i + 1}`}
               className={`overflow-hidden rounded-sm ${i === index ? "ring-1 ring-gold" : ""}`}
             >
-              <img src={image.url} alt="" className="aspect-square w-full object-cover" />
+              <img src={image.url} alt="" className="aspect-square w-full bg-ink object-contain object-center" />
             </button>
           ))}
         </div>

@@ -51,7 +51,13 @@ function fromFolder(
   rows: Array<[string, string, string, string?]>,
 ): Product[] {
   return rows.map(([slug, name, file, alt]) =>
-    piece(slug, name, `Sublimated ${name.toLowerCase()}.`, `/products/${folder}/${file}`, alt ?? name),
+    piece(
+      slug,
+      name,
+      `Sublimated ${name.toLowerCase()}.`,
+      file ? `/products/${folder}/${file}` : "",
+      alt ?? name,
+    ),
   );
 }
 
@@ -164,7 +170,7 @@ export const MORE_CATEGORIES: Category[] = [
       ["dad-legend-tumbler", "Dad legend tumbler", "dad-legend.jpg"],
       ["pj-klipdrift-tumbler", "Klipdrift tumbler", "pj-klipdrift.jpg"],
       ["milandri-tumbler", "Script tumbler", "milandri.jpg"],
-      ["brother-tumbler", "Brother tumbler", "brother.jpg"],
+      ["brother-tumbler", "Brother tumbler", ""],
     ]),
     ],
   },

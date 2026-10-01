@@ -4,6 +4,7 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Input } from "@/components/ui/Input";
+import { convexEnabled } from "@/lib/convex-enabled";
 import { publishedCategory, publishedProducts } from "@/lib/catalogue";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { resolveStudio } from "@/lib/studio";
@@ -18,10 +19,13 @@ export function CategoryPage() {
   const [search, setSearch] = useState("");
   const studio = resolveStudio(useSiteSettings());
   const studioCategory = publishedCategory(slug);
-  const category = useQuery(api.collections.getCategoryBySlug, studioCategory ? "skip" : { slug });
+  const category = useQuery(
+    api.collections.getCategoryBySlug,
+    studioCategory || !convexEnabled() ? "skip" : { slug },
+  );
   const products = useQuery(
     api.products.listPublic,
-    studioCategory
+    studioCategory || !convexEnabled()
       ? "skip"
       : {
           categorySlug: slug,
@@ -78,7 +82,7 @@ export function CategoryPage() {
     };
   }, [view, studioCategory, studioProducts, products, description, origin, path]);
 
-  if (!studioCategory && category === undefined) {
+  if (!studioCategory && convexEnabled() && category === undefined) {
     return <div className="container-wide py-24">Loading…</div>;
   }
   if (!view) {
