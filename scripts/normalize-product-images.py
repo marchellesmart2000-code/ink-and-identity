@@ -43,6 +43,8 @@ def content_box(image: Image.Image) -> tuple[int, int, int, int]:
 def normalize(path: Path) -> tuple[str, tuple[int, int]]:
     image = Image.open(path).convert("RGB")
     cropped = image.crop(content_box(image))
+    if cropped.height < 250:
+        raise RuntimeError(f"Content too short ({cropped.height}px) — replace the source photo before normalizing.")
     canvas = Image.new("RGB", CANVAS, (0, 0, 0))
     max_w = int(CANVAS[0] * (1 - MARGIN * 2))
     max_h = int(CANVAS[1] * (1 - MARGIN * 2))

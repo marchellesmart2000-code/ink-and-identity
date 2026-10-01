@@ -21,7 +21,9 @@ export function ProductDetailPage() {
   const product = catalogueProduct
     ? {
         ...catalogueProduct,
-        gallery: [{ url: catalogueProduct.coverUrl, alt: catalogueProduct.coverAlt, caption: undefined }],
+        gallery: catalogueProduct.coverUrl
+          ? [{ url: catalogueProduct.coverUrl, alt: catalogueProduct.coverAlt, caption: undefined }]
+          : [],
         leadTime: "",
         minimumQuantity: undefined as number | undefined,
         related: relatedProducts(slug),
