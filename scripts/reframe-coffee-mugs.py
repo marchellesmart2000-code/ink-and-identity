@@ -1,4 +1,8 @@
-"""Reframe coffee mug photos so mugs fill the shop canvas instead of thin strips."""
+"""Reframe the wide coffee-mug marketing crops that had bad top extraction.
+
+Only touches the three mug rows called out in review. Keeps the full product
+group in frame — no single-mug zoom crops.
+"""
 
 from __future__ import annotations
 
@@ -15,23 +19,10 @@ MARGIN = 0.06
 INK = 28
 MIN_PAD = 20
 
-# Mug+coaster set photos are already tall enough — only reframe the wide mug rows.
-SKIP = {
-    "chris-adventure-set.jpg",
-    "gideon-mug-coaster.jpg",
-    "hannie-mug-coaster.jpg",
-    "landie-mug-coaster.jpg",
-}
-
-# Prefer a specific third of wide marketing crops (0=left, 1=centre, 2=right).
-PREFERRED_THIRD: dict[str, int] = {
-    "worthy-bow-mugs.jpg": 2,  # "She is Worthy" text
-    "juf-anneke-mugs.jpg": 0,  # "Juf Anneke" name
-    "kobus-mugs.jpg": 1,
-    "manzelle-mugs.jpg": 1,
-    "secret-mike-mugs.jpg": 1,
-    "apex-wellness-mugs.jpg": 1,
-    "chris-hunt-mugs.jpg": 1,
+TARGETS = {
+    "worthy-bow-mugs.jpg": "She is Worthy frosted bow mugs (front and back)",
+    "juf-anneke-mugs.jpg": "Teacher mugs, three views",
+    "homosapien-mug.jpg": "World's Best Homosapien mug",
 }
 
 
@@ -49,7 +40,7 @@ def git_source(name: str) -> Image.Image:
 
 
 def mug_row_box(image: Image.Image) -> tuple[int, int, int, int]:
-    """Find the main horizontal mug band, ignoring noisy top rows and reflections."""
+    """Tight vertical bounds around the mug row; keep the full horizontal group."""
     width, height = image.size
     pixels = image.load()
     min_run = max(80, int(width * 0.12))
@@ -59,8 +50,7 @@ def mug_row_box(image: Image.Image) -> tuple[int, int, int, int]:
         run = best = 0
         start = best_start = best_end = 0
         for x in range(int(width * 0.02), int(width * 0.98)):
-            pixel = pixels[x, y]
-            if not is_ink(pixel):
+            if not is_ink(pixels[x, y]):
                 if run == 0:
                     start = x
                 run += 1
@@ -72,7 +62,6 @@ def mug_row_box(image: Image.Image) -> tuple[int, int, int, int]:
                 run = 0
         if best < min_run:
             continue
-        # Ignore isolated logo / smoke rows near the top corners.
         if y < height * 0.35 and (best_end < width * 0.34 or best_start > width * 0.66):
             continue
         rows.append((y, best_start, best_end))
@@ -84,7 +73,6 @@ def mug_row_box(image: Image.Image) -> tuple[int, int, int, int]:
     right = max(row[2] for row in rows)
     top = rows[0][0]
     bottom = rows[-1][0]
-
     pad = MIN_PAD
     return (
         max(0, left - pad),
@@ -94,35 +82,7 @@ def mug_row_box(image: Image.Image) -> tuple[int, int, int, int]:
     )
 
 
-def trim_reflection(image: Image.Image, box: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
-    """Drop the mirror reflection under a mug on glossy black."""
-    left, top, right, bottom = box
-    pixels = image.load()
-    widths: list[tuple[int, int]] = []
-    for y in range(top, bottom + 1):
-        run = 0
-        for x in range(left, right + 1):
-            if not is_ink(pixels[x, y]):
-                run += 1
-        widths.append((y, run))
-
-    if len(widths) < 8:
-        return box
-
-    body_width = sorted(width for _, width in widths[: len(widths) // 2])[
-        len(widths) // 4
-    ]
-    cutoff = bottom
-    for y, row_width in widths:
-        if y > top + 40 and row_width > body_width * 1.45:
-            cutoff = max(top + 20, y - 8)
-            break
-
-    return left, top, right, min(bottom, cutoff)
-
-
 def trim_glitch_top(image: Image.Image, box: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
-    """Drop corrupted scan-line noise above the mug (homosapien source)."""
     left, top, right, bottom = box
     pixels = image.load()
     clean_top = top
@@ -136,42 +96,21 @@ def trim_glitch_top(image: Image.Image, box: tuple[int, int, int, int]) -> tuple
     return left, clean_top, right, bottom
 
 
-def trim_horizontal_padding(
-    image: Image.Image, box: tuple[int, int, int, int]
-) -> tuple[int, int, int, int]:
-    """Remove dead black columns inside a mug crop."""
+def trim_reflection(image: Image.Image, box: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
     left, top, right, bottom = box
     pixels = image.load()
-    active: list[int] = []
-    y0 = top + (bottom - top) // 6
-    y1 = bottom - (bottom - top) // 8
-    for x in range(left, right + 1):
-        count = sum(1 for y in range(y0, y1 + 1) if not is_ink(pixels[x, y]))
-        if count > (y1 - y0 + 1) * 0.08:
-            active.append(x)
-    if not active:
-        return box
-    pad = 10
-    return (
-        max(0, active[0] - pad),
-        top,
-        min(image.size[0], active[-1] + pad + 1),
-        bottom,
-    )
+    widths: list[tuple[int, int]] = []
+    for y in range(top, bottom + 1):
+        run = sum(1 for x in range(left, right + 1) if not is_ink(pixels[x, y]))
+        widths.append((y, run))
 
-
-def pick_single_mug(image: Image.Image, box: tuple[int, int, int, int], third: int) -> tuple[int, int, int, int]:
-    left, top, right, bottom = box
-    crop_w = right - left
-    crop_h = bottom - top
-    if crop_w / max(crop_h, 1) < 1.55:
-        return box
-
-    third_w = crop_w // 3
-    idx = max(0, min(2, third))
-    mug_left = left + idx * third_w
-    mug_right = mug_left + third_w if idx < 2 else right
-    return mug_left, top, mug_right, bottom
+    body_width = sorted(width for _, width in widths[: len(widths) // 2])[len(widths) // 4]
+    cutoff = bottom
+    for y, row_width in widths:
+        if y > top + 40 and row_width > body_width * 1.45:
+            cutoff = max(top + 20, y - 8)
+            break
+    return left, top, right, min(bottom, cutoff)
 
 
 def normalize(image: Image.Image) -> Image.Image:
@@ -195,9 +134,6 @@ def normalize(image: Image.Image) -> Image.Image:
             min(height, max_y + pad + 1),
         )
     )
-    if cropped.height < 180:
-        raise RuntimeError(f"Content too short ({cropped.height}px)")
-
     canvas = Image.new("RGB", CANVAS, (0, 0, 0))
     max_w = int(CANVAS[0] * (1 - MARGIN * 2))
     max_h = int(CANVAS[1] * (1 - MARGIN * 2))
@@ -216,27 +152,15 @@ def reframe(name: str) -> Image.Image:
     box = mug_row_box(source)
     if name == "homosapien-mug.jpg":
         box = trim_glitch_top(source, box)
-        left, top, right, bottom = box
-        box = (left, top, right, min(bottom, 238))
-    third = PREFERRED_THIRD.get(name, 1)
-    box = pick_single_mug(source, box, third)
-    if name != "homosapien-mug.jpg":
         box = trim_reflection(source, box)
-    box = trim_horizontal_padding(source, box)
     return normalize(source.crop(box))
 
 
 def main() -> None:
-    for path in sorted(ROOT.glob("*.jpg")):
-        if path.name in SKIP:
-            print(f"skip {path.name}")
-            continue
-        try:
-            output = reframe(path.name)
-            output.save(path, quality=90, optimize=True)
-            print(f"ok  {path.name}")
-        except Exception as error:
-            print(f"err {path.name}: {error}")
+    for name, note in TARGETS.items():
+        output = reframe(name)
+        output.save(ROOT / name, quality=90, optimize=True)
+        print(f"ok  {name:24} {note}")
 
 
 if __name__ == "__main__":
