@@ -71,7 +71,7 @@ def crop_runs(image: Image.Image, **options: float | int) -> Image.Image:
     )
 
 
-def normalize(image: Image.Image) -> Image.Image:
+def normalize(image: Image.Image, *, y_offset: int = 0) -> Image.Image:
     width, height = image.size
     pixels = image.load()
     min_x, min_y, max_x, max_y = width, height, 0, 0
@@ -100,7 +100,10 @@ def normalize(image: Image.Image) -> Image.Image:
         (max(1, int(cropped.width * scale)), max(1, int(cropped.height * scale))),
         Image.Resampling.LANCZOS,
     )
-    offset = ((CANVAS[0] - resized.width) // 2, (CANVAS[1] - resized.height) // 2)
+    offset = (
+        (CANVAS[0] - resized.width) // 2,
+        max(0, (CANVAS[1] - resized.height) // 2 - y_offset),
+    )
     canvas.paste(resized, offset)
     return canvas
 
@@ -114,7 +117,8 @@ JOBS = [
     {
         "source": "homosapien-mug-source.jpg",
         "dest": ROOT / "coffee-mugs" / "homosapien-mug.jpg",
-        "crop": lambda image: crop_runs(image, y_max=0.65, min_run=80, x_min=0.28, x_max=0.72, pad=32),
+        "crop": lambda image: image.crop((334, 35, 861, 640)),
+        "normalize": {"y_offset": 48},
     },
     {
         "source": "ac-fitness-bottle-source.jpg",
@@ -131,7 +135,7 @@ def main() -> None:
             raise FileNotFoundError(source_path)
         image = Image.open(source_path).convert("RGB")
         cropped = job["crop"](image)
-        output = normalize(cropped)
+        output = normalize(cropped, **job.get("normalize", {}))
         job["dest"].parent.mkdir(parents=True, exist_ok=True)
         output.save(job["dest"], quality=90, optimize=True)
         print(f"ok  {job['dest'].relative_to(ROOT.parents[1])}  crop {cropped.size}")
