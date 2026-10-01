@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { ProductImageFrame } from "@/components/ui/ProductImageFrame";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { PLACEHOLDER_TONES } from "@/lib/constants";
 import { availabilityCopy } from "@/lib/format";
@@ -55,22 +56,21 @@ export function ProductCard({
       className="group flex h-full flex-col"
     >
       <Link to={`/shop/${slug}`} className="block">
-        <div className="relative overflow-hidden rounded-sm border border-gold/15">
-          {coverUrl ? (
-            <img
-              src={coverUrl}
-              alt={coverAlt ?? name}
-              className="aspect-square w-full bg-ink object-contain p-3 transition-transform duration-200 group-hover:scale-[1.03] sm:aspect-[4/5]"
-              loading="lazy"
-              decoding="async"
-            />
-          ) : (
-            <div className={`aspect-[4/5] bg-linear-to-br ${tone} paper-grain`} />
-          )}
-          <div className="absolute left-4 top-4 flex gap-2">
-            {featured ? <Badge>Featured</Badge> : null}
-          </div>
-        </div>
+        {coverUrl ? (
+          <ProductImageFrame
+            src={coverUrl}
+            alt={coverAlt ?? name}
+            overlay={
+              featured ? (
+                <div className="absolute left-4 top-4 flex gap-2">
+                  <Badge>Featured</Badge>
+                </div>
+              ) : null
+            }
+          />
+        ) : (
+          <div className={`aspect-[4/5] overflow-hidden rounded-sm border border-gold/15 bg-linear-to-br ${tone} paper-grain`} />
+        )}
         <div className="pt-4">
           {categorySlug && categoryName ? (
             <p className="text-[0.62rem] tracking-[0.18em] uppercase text-gold/80">{categoryName}</p>

@@ -30,12 +30,14 @@ export function CategoryCover({
       <Link to={href} className="group block h-full">
         <div className="relative overflow-hidden rounded-sm border border-gold/20 bg-ink transition-colors group-hover:border-gold">
           {coverUrl ? (
-            <img
-              src={coverUrl}
-              alt={coverAlt ?? name}
-              className="aspect-[4/5] w-full object-contain p-6 transition-transform duration-200 group-hover:scale-[1.03]"
-              loading="lazy"
-            />
+            <div className="flex aspect-[4/5] items-center justify-center">
+              <img
+                src={coverUrl}
+                alt={coverAlt ?? name}
+                className="h-full w-full object-contain object-center transition-transform duration-200 group-hover:scale-[1.02]"
+                loading="lazy"
+              />
+            </div>
           ) : (
             <div className="aspect-[4/5] bg-linear-to-br from-[#050505] to-[#3a2e18]" />
           )}
