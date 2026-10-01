@@ -114,7 +114,7 @@ JOBS = [
     {
         "source": "homosapien-mug-source.jpg",
         "dest": ROOT / "coffee-mugs" / "homosapien-mug.jpg",
-        "crop": lambda image: crop_runs(image, y_max=0.55, min_run=80, x_min=0.28, x_max=0.72, pad=20),
+        "crop": lambda image: crop_runs(image, y_max=0.65, min_run=80, x_min=0.28, x_max=0.72, pad=32),
     },
     {
         "source": "ac-fitness-bottle-source.jpg",
