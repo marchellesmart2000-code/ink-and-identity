@@ -44,10 +44,6 @@ def content_box(image: Image.Image) -> tuple[int, int, int, int]:
 
 # Original WA crops include a partial product on the left. Reframe to fully visible items.
 REFRAMES = {
-    "water-bottles/ac-fitness-bottle.jpg": {
-        "crop": (35, 0, 195, 540),
-        "note": "Single centre bottle; far-left sliver removed.",
-    },
     "can-coolers/ac-fitness-cans.jpg": {
         "crop": (300, 0, 530, 592),
         "note": "Centre can only; partial left/right cans from WA crop removed.",
