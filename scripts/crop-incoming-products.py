@@ -133,7 +133,12 @@ JOBS = [
     {
         "source": "manzelle-mugs-source.jpg",
         "dest": ROOT / "coffee-mugs" / "manzelle-mugs.jpg",
-        "crop": lambda image: crop_runs(image, y_max=0.68, min_run=100, pad=20),
+        "crop": lambda image: crop_runs(image, y_max=0.65, min_run=80, pad=20),
+    },
+    {
+        "source": "brother-source.jpg",
+        "dest": ROOT / "skinny-tumblers" / "brother.jpg",
+        "crop": lambda image: crop_runs(image, y_max=0.72, min_run=55, ink=16, pad=20),
     },
 ]
 

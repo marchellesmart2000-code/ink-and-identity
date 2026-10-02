@@ -14,15 +14,6 @@ python3 scripts/normalize-product-images.py
 - `worthy-bow-mugs-source.jpg` — She is Worthy frosted mugs
 - `homosapien-mug-source.jpg` — World's Best Homosapien mug
 - `ac-fitness-bottle-source.jpg` — AC Fitness bottle trio
-
-## Still needed (original WA marketing frames)
-
-Drop these files here to replace the old extracted strips:
-
-| File name | WA code | Product |
-|-----------|---------|---------|
-| `juf-anneke-mugs-source.jpg` | WA0106 | Teacher mugs |
-| `manzelle-mugs-source.jpg` | WA0107 | Leopard print mugs |
-| `*-WA0114-*.jpg` or `brother-source.jpg` | WA0114 | Brother tumbler |
-
-The Brother tumbler currently shows a placeholder because the saved crop only contained the lid strip (158px tall) and cannot be repaired without the original frame.
+- `juf-anneke-mugs-source.jpg` — Teacher mugs (WA0106)
+- `manzelle-mugs-source.jpg` — Leopard print mugs (WA0107)
+- `brother-source.jpg` — Brother tumbler (WA0114)
