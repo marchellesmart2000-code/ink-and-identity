@@ -125,6 +125,16 @@ JOBS = [
         "dest": ROOT / "water-bottles" / "ac-fitness-bottle.jpg",
         "crop": lambda image: image.crop((175, 255, 785, 795)),
     },
+    {
+        "source": "juf-anneke-mugs-source.jpg",
+        "dest": ROOT / "coffee-mugs" / "juf-anneke-mugs.jpg",
+        "crop": lambda image: crop_runs(image, y_max=0.68, min_run=100, pad=20),
+    },
+    {
+        "source": "manzelle-mugs-source.jpg",
+        "dest": ROOT / "coffee-mugs" / "manzelle-mugs.jpg",
+        "crop": lambda image: crop_runs(image, y_max=0.68, min_run=100, pad=20),
+    },
 ]
 
 
@@ -132,7 +142,8 @@ def main() -> None:
     for job in JOBS:
         source_path = INCOMING / job["source"]
         if not source_path.exists():
-            raise FileNotFoundError(source_path)
+            print(f"skip  {job['source']} (drop source in assets/incoming/ and re-run)")
+            continue
         image = Image.open(source_path).convert("RGB")
         cropped = job["crop"](image)
         output = normalize(cropped, **job.get("normalize", {}))

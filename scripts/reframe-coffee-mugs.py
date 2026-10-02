@@ -19,11 +19,7 @@ MARGIN = 0.06
 INK = 28
 MIN_PAD = 20
 
-TARGETS = {
-    "worthy-bow-mugs.jpg": "She is Worthy frosted bow mugs (front and back)",
-    "juf-anneke-mugs.jpg": "Teacher mugs, three views",
-    "homosapien-mug.jpg": "World's Best Homosapien mug",
-}
+TARGETS: dict[str, str] = {}
 
 
 def is_ink(pixel: tuple[int, int, int]) -> bool:

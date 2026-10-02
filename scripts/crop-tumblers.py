@@ -28,7 +28,10 @@ JOBS: list[tuple[str, str, str, dict[str, float | int]]] = [
 ]
 
 
-def find_source(code: str) -> Path | None:
+def find_source(code: str, stem: str) -> Path | None:
+    explicit = ASSETS / f"{stem}-source.jpg"
+    if explicit.exists():
+        return explicit
     matches = sorted(ASSETS.glob("*.jpg"), key=lambda path: path.stat().st_mtime)
     for path in matches:
         if f"-{code}-" in path.name or path.name.startswith(code):
@@ -132,9 +135,9 @@ def main() -> None:
         print(f"Created {ASSETS}. Drop WA source JPGs there and run again.")
         return
     for _name, file_stem, code, options in JOBS:
-        source = find_source(code)
+        source = find_source(code, file_stem)
         if source is None:
-            print("missing", code)
+            print("missing", code, f"(drop {file_stem}-source.jpg or *-{code}-*.jpg in assets/incoming/)")
             continue
         crop_runs(source, OUT / f"{file_stem}.jpg", **options)
 
