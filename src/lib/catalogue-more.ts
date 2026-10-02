@@ -170,7 +170,7 @@ export const MORE_CATEGORIES: Category[] = [
       ["dad-legend-tumbler", "Dad legend tumbler", "dad-legend.jpg"],
       ["pj-klipdrift-tumbler", "Klipdrift tumbler", "pj-klipdrift.jpg"],
       ["milandri-tumbler", "Script tumbler", "milandri.jpg"],
-      ["brother-tumbler", "Brother tumbler", ""],
+      ["brother-tumbler", "Brother tumbler", "brother.jpg"],
     ]),
     ],
   },
